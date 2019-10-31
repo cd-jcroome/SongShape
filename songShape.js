@@ -33,7 +33,7 @@ function handleResize() {
 }
 d3.csv(
   "https://raw.githubusercontent.com/Jasparr77/hobby-dataviz-d3/master/songShape/" +
-    "output/soWhat.csv",
+    "output/SevenNationArmy.csv",
   function(data) {
     console.log(data);
     handleResize();
