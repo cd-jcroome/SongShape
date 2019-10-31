@@ -32,7 +32,7 @@ function handleResize() {
     .style("pointer-events", "none");
 }
 d3.csv(
-  "https://raw.githubusercontent.com/Jasparr77/hobby-dataviz-d3/master/songShape/" +
+  "https://raw.githubusercontent.com/Jasparr77/master/SongShape/" +
     "output/SevenNationArmy.csv",
   function(data) {
     console.log(data);
@@ -60,7 +60,7 @@ d3.csv(
         return y(d.value["y"]);
       });
     d3.csv(
-      "https://raw.githubusercontent.com/Jasparr77/hobby-dataviz-d3/dev/songShape/instrument_metadata.csv",
+      "https://raw.githubusercontent.com/Jasparr77/master/SongShape/instrument_metadata.csv",
       function(md) {
         console.log(md);
         var color = d3
