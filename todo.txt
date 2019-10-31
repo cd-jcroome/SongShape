@@ -1,0 +1,25 @@
+2019/07/16 - work needed:
+    [X] python script to pull in multiple songs (beautiful soup)
+    [] js to display multiple songs
+    [] animate on click
+    [] node.js to serve up app
+    [X] get timing right.
+
+2019/08/28
+    [X] add instrument name to data
+    [] make viz interactive
+        [] play on click
+            [] dots
+            [] midi or songs
+        [] selector for instrument type
+    [] style
+        [] font
+        [X] colors
+        [X] change drums to just dots
+    [] performance
+        [] just one c/fifths per occurence
+
+2019.10.16
+    https://en.wikipedia.org/wiki/Music_information_retrieval
+    I can use librosa for m4a!
+    https://www.lunaverus.com/ - possible resource for mp3 to midi? only stores instruments as piano, so no.
