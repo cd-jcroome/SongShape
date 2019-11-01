@@ -7,8 +7,10 @@ from os import listdir
 from os.path import isfile, join, splitext
 
 # for all of the audio files in a given folder...
-songs_folder = input("where are the songs? (hit enter if they're in the same folder)\n")
-files = [f for f in listdir('./songs/'+songs_folder+'/') if isfile(join('./songs/'+songs_folder+'/',f))]
+# songs_folder = input("where are the songs? (hit enter if they're in the same folder)\n")
+songs_folder = 'mp3_m4a'
+
+files = [f for f in listdir('./songs/'+songs_folder+'/') if (isfile(join('./songs/'+songs_folder+'/',f)) and f.endswith(('.m4a','.mp3')))]
 print(files)
 
 def audio2data(path):
@@ -17,7 +19,9 @@ def audio2data(path):
     print('analyzing {}...'.format(f))
     y, sr = librosa.load('./songs/'+songs_folder+'/'+path)
     y_harmonic = librosa.effects.hpss(y)[0]
-    C = librosa.feature.chroma_cqt(y=y_harmonic, sr=sr, bins_per_octave=36)
+    C = np.abs(librosa.cqt(y=y_harmonic, sr=sr, fmin=6, n_bins=128, bins_per_octave=12))
+    cqt_db = librosa.amplitude_to_db(C, ref=np.max)
+    print(cqt_db)
     # make the dataframes
     c_df = pd.DataFrame(notes).join(pd.DataFrame(C),lsuffix='n').melt(id_vars='0n').rename(columns={'0n': "Note", "variable": "Time","index":"key"})
     c_df_summary_1 = c_df.groupby(['Note']).mean()
