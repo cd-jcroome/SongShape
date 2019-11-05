@@ -14,23 +14,27 @@ files = [f for f in listdir('./songs/'+songs_folder+'/') if (isfile(join('./song
 print(files)
 
 def audio2data(path):
-    notes = ['C','C#/Db','D','D#/Eb','E','F','F#/Gb','G','G#/Ab','A','A#/Bb','B']
+    notes = pd.read_csv('./midi_metadata.csv')
+
     # use librosa to analyze file
     print('analyzing {}...'.format(f))
     y, sr = librosa.load('./songs/'+songs_folder+'/'+path)
-    y_harmonic = librosa.effects.hpss(y)[0]
-    C = np.abs(librosa.cqt(y=y_harmonic, sr=sr, fmin=6, n_bins=128, bins_per_octave=12))
-    cqt_db = librosa.amplitude_to_db(C, ref=np.max)
-    print(cqt_db)
+
+    #split out the harmonic and percussive audio
+    y_harmonic, y_percussive = librosa.effects.hpss(y)
+
+    #map out the values into an array
+    cqt_h = np.abs(librosa.cqt(y_harmonic, sr=sr, n_bins=128, fmin=6, bins_per_octave=12))
+
     # make the dataframes
-    c_df = pd.DataFrame(notes).join(pd.DataFrame(C),lsuffix='n').melt(id_vars='0n').rename(columns={'0n': "Note", "variable": "Time","index":"key"})
-    c_df_summary_1 = c_df.groupby(['Note']).mean()
-    c_df_summary_2 = c_df.groupby(['Note']).median()
-    c_df_summary = c_df_summary_1.join(c_df_summary_2,on=['Note'],lsuffix='_mean').rename(columns={'value_mean':'Mean','value':'Median'})
+    c_df = pd.DataFrame(notes).join(pd.DataFrame(cqt_h),lsuffix='n').melt(id_vars={'MIDI Note', 'Octave', 'Note'})
+    c_df_summary_1 = c_df.groupby(['MIDI Note']).mean().drop(columns='Octave')
+    c_df_summary_2 = c_df.groupby(['MIDI Note']).median()
+    c_df_summary = c_df_summary_1.join(c_df_summary_2,on=['MIDI Note'],lsuffix='_mean').rename(columns={'value_mean':'Mean','value':'Median'})
     # convert to csv
     print('...converting {} to CSV...'.format(f))
-    m_csv = join('./output/librosa/',splitext(f)[0],'.csv').replace("/.csv",".csv")
-    m_summ_csv = join('./output/librosa/',splitext(f)[0],'.csv').replace("/.csv","_summ.csv")
+    m_csv = join('./output/librosa_128/',splitext(f)[0],'.csv').replace("/.csv",".csv")
+    m_summ_csv = join('./output/librosa_128/',splitext(f)[0],'.csv').replace("/.csv","_summ.csv")
     c_df.to_csv(m_csv)
     c_df_summary.to_csv(m_summ_csv)
     print('{} completed!'.format(f))
