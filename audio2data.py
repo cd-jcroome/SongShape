@@ -27,15 +27,15 @@ def audio2data(path):
     cqt_h = np.abs(librosa.cqt(y_harmonic, sr=sr, n_bins=128, fmin=6, bins_per_octave=12))
 
     # make the dataframes
-    c_df = pd.DataFrame(notes).join(pd.DataFrame(cqt_h),lsuffix='n').melt(id_vars={'MIDI Note', 'Octave', 'Note'})
-    c_df_summary_1 = c_df.groupby(['MIDI Note']).mean().drop(columns='Octave')
-    c_df_summary_2 = c_df.groupby(['MIDI Note']).median()
-    c_df_summary = c_df_summary_1.join(c_df_summary_2,on=['MIDI Note'],lsuffix='_mean').rename(columns={'value_mean':'Mean','value':'Median'})
+    c_df = pd.DataFrame(notes).join(pd.DataFrame(cqt_h),lsuffix='n').melt(id_vars={'MIDI Note', 'Octave', 'Note'}).rename(columns={'variable':'time'})
+    c_df_summary_1 = c_df.groupby(['Note', 'Octave']).mean()
+    c_df_summary_2 = c_df.groupby(['Note', 'Octave']).median().drop(columns=['MIDI Note'])
+    c_df_summary = c_df_summary_1.join(c_df_summary_2,lsuffix='_mean').rename(columns={'value_mean':'Mean','value':'Median'})
     # convert to csv
     print('...converting {} to CSV...'.format(f))
-    m_csv = join('./output/librosa_128/',splitext(f)[0],'.csv').replace("/.csv",".csv")
+    # m_csv = join('./output/librosa_128/',splitext(f)[0],'.csv').replace("/.csv",".csv")
     m_summ_csv = join('./output/librosa_128/',splitext(f)[0],'.csv').replace("/.csv","_summ.csv")
-    c_df.to_csv(m_csv)
+    # c_df.to_csv(m_csv)
     c_df_summary.to_csv(m_summ_csv)
     print('{} completed!'.format(f))
 ## convert midifile to pandas df

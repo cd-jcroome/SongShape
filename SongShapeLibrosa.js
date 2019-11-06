@@ -32,10 +32,10 @@ function handleResize() {
     .style("pointer-events", "none");
 }
 d3.csv(
-  "https://raw.githubusercontent.com/Jasparr77/hobby-dataviz-d3/dev/" +
-    "songShape/output/librosa/BrettDennen_DesertSunrise.csv",
+  "https://raw.githubusercontent.com/Jasparr77/songShape/master/" +
+    "/output/librosa_128/Flume_Helix_summ.csv").then(
   function(data) {
-    console.log(data);
+    console.log('data is loaded');
     handleResize();
 
     var x = d3
@@ -98,27 +98,29 @@ d3.csv(
     var pointData = d3
       .nest()
       .key(function(d) {
-        return d["Note"] + "|" + d["Time"];
+        return d[""];
       })
       .rollup(function(leaves) {
         return {
           x: d3.sum(leaves, function(d) {
             // x coordinate for note
-            return Math.sin(anglePrep(noteDataScale(d["Note"]))) * d["value"];
+            return Math.sin(anglePrep(noteDataScale(d["Note"]))) * (11/(d["Octave"]+1));
           }),
           y: d3.sum(leaves, function(d) {
             // y coordinate for note
-            return Math.cos(anglePrep(noteDataScale(d["Note"]))) * d["value"];
+            return Math.cos(anglePrep(noteDataScale(d["Note"]))) * (11/(d["Octave"]+1));
           }),
           strength: d3.sum(leaves, function(d) {
             return d["value"];
           }),
           time: d3.sum(leaves, function(d) {
-            return d["Time"];
+            return d["time"];
           })
         };
       })
       .entries(data);
+
+      console.log(pointData[1])
 
     lastRecord = data.length - 1;
 
@@ -137,7 +139,8 @@ d3.csv(
       })
       .text(function(d) {
         return d["note_name"];
-      });
+      })
+      .attr("text-anchor","middle");
 
     // dots
     chartGroup
@@ -154,19 +157,19 @@ d3.csv(
       })
       .attr("r", ".3vw")
       .attr("fill", "purple")
-      .attr("fill-opacity", "0")
-      .transition()
-      .delay(function(d) {
-        return d.value["time"] * 20;
-      })
-      .duration(20)
+      // .attr("fill-opacity", "0")
+      // .transition()
+      // .delay(function(d) {
+      //   return d.value["time"] * 20;
+      // })
+      // .duration(20)
       .attr("fill-opacity", function(d) {
         return d.value["strength"];
       })
       // .attr("stroke", "none")
-      .transition()
-      .duration(20)
-      .attr("fill-opacity", "0");
+      // .transition()
+      // .duration(20)
+      // .attr("fill-opacity", "0");
     // .attr("fill-opacity", 1)
     // .attr("stroke", "white")
     // .attr("stroke-width", ".04vw")
