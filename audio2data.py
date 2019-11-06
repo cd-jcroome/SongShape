@@ -29,8 +29,8 @@ def audio2data(path):
     # make the dataframes
     c_df = pd.DataFrame(notes).join(pd.DataFrame(cqt_h),lsuffix='n').melt(id_vars={'MIDI Note', 'Octave', 'Note'}).rename(columns={'variable':'time'})
     c_df_summary_1 = c_df.groupby(['Note', 'Octave']).mean()
-    c_df_summary_2 = c_df.groupby(['Note', 'Octave']).median().drop(columns=['MIDI Note'])
-    c_df_summary = c_df_summary_1.join(c_df_summary_2,lsuffix='_mean').rename(columns={'value_mean':'Mean','value':'Median'})
+    c_df_summary_2 = c_df.groupby(['Note', 'Octave']).count().drop(columns=['MIDI Note'])
+    c_df_summary = c_df_summary_1.join(c_df_summary_2,lsuffix='_mean').rename(columns={'value_mean':'Mean','value':'Count'})
     # convert to csv
     print('...converting {} to CSV...'.format(f))
     # m_csv = join('./output/librosa_128/',splitext(f)[0],'.csv').replace("/.csv",".csv")

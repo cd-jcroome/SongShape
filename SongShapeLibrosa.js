@@ -33,7 +33,7 @@ function handleResize() {
 }
 d3.csv(
   "https://raw.githubusercontent.com/Jasparr77/songShape/master/" +
-    "/output/librosa_128/Flume_Helix_summ.csv").then(
+    "/output/librosa_128/Flume_Helix.csv").then(
   function(data) {
     console.log('data is loaded');
     handleResize();

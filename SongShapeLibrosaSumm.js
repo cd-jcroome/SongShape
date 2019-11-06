@@ -33,19 +33,19 @@ function handleResize() {
 }
 d3.csv(
   "https://raw.githubusercontent.com/Jasparr77/songShape/master/" +
-    "/output/librosa_128/Flume_Helix_summ.csv").then(
+    "/output/librosa_128/BonoboKerala_summ.csv").then(
   function(data) {
     console.log(data);
     handleResize();
 
     var x = d3
       .scaleLinear()
-      .domain([-1, 1])
+      .domain([-1.1, 1.1])
       .range([0, xRange]);
 
     var y = d3
       .scaleLinear()
-      .domain([-1, 1])
+      .domain([-1.1, 1.1])
       .range([yRange, 0]);
 
     var songPath = d3
@@ -98,29 +98,29 @@ d3.csv(
     var pointData = d3
       .nest()
       .key(function(d) {
-        return d[""];
+        return d["MIDI Note"];
       })
       .rollup(function(leaves) {
         return {
           x: d3.sum(leaves, function(d) {
             // x coordinate for note
-            return Math.sin(anglePrep(noteDataScale(d["Note"]))) * (11/(d["Octave"]+1));
+            return Math.sin(anglePrep(noteDataScale(d["Note"]))) * ((d["Octave"]==0?1:d["Octave"])/10);
           }),
           y: d3.sum(leaves, function(d) {
             // y coordinate for note
-            return Math.cos(anglePrep(noteDataScale(d["Note"]))) * (11/(d["Octave"]+1));
+            return Math.cos(anglePrep(noteDataScale(d["Note"]))) * ((d["Octave"]==0?1:d["Octave"])/10);
           }),
-          strength: d3.sum(leaves, function(d) {
-            return d["value"];
+          mean: d3.sum(leaves, function(d) {
+            return d["Mean"];
           }),
-          time: d3.sum(leaves, function(d) {
-            return d["time"];
+          median: d3.sum(leaves, function(d) {
+            return d["Median"];
           })
         };
       })
       .entries(data);
 
-      console.log(pointData[1])
+      console.log(pointData)
 
     lastRecord = data.length - 1;
 
@@ -149,6 +149,9 @@ d3.csv(
       .enter()
       .append("circle")
       .attr("class", "noteCircle")
+      .attr("id",d=>{
+        return d.key
+      })
       .attr("cx", function(d) {
         return x(d.value["x"]);
       })
@@ -164,7 +167,7 @@ d3.csv(
       // })
       // .duration(20)
       .attr("fill-opacity", function(d) {
-        return d.value["strength"];
+        return d.value["mean"];
       })
       // .attr("stroke", "none")
       // .transition()
