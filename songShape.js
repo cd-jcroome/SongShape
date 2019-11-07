@@ -32,8 +32,7 @@ function handleResize() {
     .style("pointer-events", "none");
 }
 d3.csv(
-  "https://raw.githubusercontent.com/Jasparr77/master/SongShape/" +
-    "output/SevenNationArmy.csv",
+  "https://raw.githubusercontent.com/Jasparr77/SongShape/master/output/SevenNationArmy.csv",
   function(data) {
     console.log(data);
     handleResize();
