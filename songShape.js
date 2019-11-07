@@ -60,7 +60,7 @@ d3.csv(
         return y(d.value["y"]);
       });
     d3.csv(
-      "https://raw.githubusercontent.com/Jasparr77/master/SongShape/instrument_metadata.csv",
+      "https://raw.githubusercontent.com/Jasparr77/SongShape/master/output/SevenNationArmy.csv",
       function(md) {
         console.log(md);
         var color = d3
