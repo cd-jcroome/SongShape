@@ -5,7 +5,29 @@
     let songName = [];
     let x =[];
     let y = [];
-    let songs = ['Bonobo_Kerala','Flume_Helix','NaiPalm_WhenTheKnife','M83_Outro','Bonobo_Jets'];
+    // let songs = d3.csv("https://raw.githubusercontent.com/Jasparr77/SongShape/master/songList.csv", (songs)=>{return songs})
+    let songs = [
+        "Bonobo_BambroKoyoGanda",
+        "Bonobo_Jets",
+        "Bonobo_Kerala",
+        "Bonobo_Migration",
+        "Bonobo_TenTigers",
+        "ChildishGambino_Redbone",
+        "ChildishGambino_StandTall",
+        "Flume_Helix",
+        "Flume_NeverBeLikeYou",
+        "M83_AnotherWaveFromYou",
+        "M83_Outro",
+        "M83SteveMcQueen",
+        "NaiPalm_Atari",
+        "NaiPalm_CrossfireSoIntoYou",
+        "NaiPalm_Homebody",
+        "NaiPalm_Molasses",
+        "NaiPalm_WhenTheKnife",
+        "StPaulAndTheBrokenBones_AllIEverWonder",
+        "StPaulAndTheBrokenBones_MidnightOnTheEarth"
+    ]
+    console.log(songs)
     let chartGroup = d3.select(".staticBody")
 
     let noteDataScale = d3.scaleOrdinal().domain([
@@ -64,7 +86,7 @@
     }
     
     function handleResize() {
-        var bodyWidth = Math.floor(window.innerWidth / songs.length);
+        var bodyWidth = Math.floor(window.innerWidth / 10);
         var bodyHeight = Math.floor(window.innerHeight * 0.8);
       
         var minDim = Math.min(bodyWidth, bodyHeight);
@@ -100,7 +122,7 @@
 
     function launchD3(d,title){
         handleResize();
-        var songContainer = d3.selectAll("#staticBody").append("svg").attr("id",title).attr("height","400px").attr("width","400px")
+        var songContainer = d3.selectAll("#staticBody").append("svg").attr("id",title).attr("height","200px").attr("width","200px")
         songContainer.append("text").text(title).attr("transform","translate(0,40)")
 
         songContainer
@@ -119,7 +141,7 @@
           return y(d.value["y"]);
         })
         .attr("r", function(d) {
-          return `${d.value["mean"]}vw`
+          return `${d.value["mean"]/2}vw`
         })
         .attr("fill", "black")
         .attr("stroke","white")
