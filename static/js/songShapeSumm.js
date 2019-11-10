@@ -7,57 +7,55 @@
   let y = [];
   // let songs = d3.csv("https://raw.githubusercontent.com/Jasparr77/SongShape/master/songList.csv", (songs)=>{return songs})
   let songs = [
-    "AaronCopland_FanfareForTheCommonMan_summ.csv",
-    "BenHarper_AnotherLonelyDayAcoustic_summ.csv",
-    "Bonobo_BambroKoyoGanda_summ.csv",
-    "Bonobo_Jets_summ.csv",
-    "Bonobo_Kerala_summ.csv",
-    "Bonobo_Migration_summ.csv",
-    "Bonobo_TenTigers_summ.csv",
-    "BreakOfReality_SpectrumOfTheSky_summ.csv",
-    "BrettDennen_Blessed_summ.csv",
-    "BrettDennen_DesertSunrise_summ.csv",
-    "BrettDennen_She'sMine_summ.csv",
-    "ChildishGambino_Redbone_summ.csv",
-    "ChildishGambino_StandTall_summ.csv",
-    "DukeEllington_Oclupaca_summ.csv",
-    "EnnioMorricone_TheEcstasyOfGold_summ.csv",
-    "EnnioMorricone_ThemeFromTheGood,TheBad&TheUgly_summ.csv",
-    "Florence+TheMachine_DogDaysAreOver_summ.csv",
-    "Flume_Helix_summ.csv",
-    "Flume_NeverBeLikeYou_summ.csv",
-    "HiatusKaiyote_Fingerprints_summ.csv",
-    "HiatusKaiyote_Molasses_summ.csv",
-    "JimiHendrix_CastlesMadeOfSand_summ.csv",
-    "JimiHendrix_LittleWing_summ.csv",
-    "JimiHendrix_VillanovaJunction_summ.csv",
-    "JohnColtrane_CentralParkWest_summ.csv",
-    "JohnColtrane_GiantSteps_summ.csv",
-    "JohnColtrane_InASentimentalMood_summ.csv",
-    "JohnColtrane_MyFavoriteThings_summ.csv",
-    "LittleBrother_BeAlright_summ.csv",
-    "LouisArmstrong_BlueberryHill_summ.csv",
-    "LouisArmstrong_WhatAWonderfulWorld_summ.csv",
-    "M83_AnotherWaveFromYou_summ.csv",
-    "M83_Outro_summ.csv",
-    "M83_SteveMcQueen_summ.csv",
-    "M83SteveMcQueen_summ.csv",
-    "Matt&Kim_Daylight_summ.csv",
-    "MiikeSnow_Animal_summ.csv",
-    "MiikeSnow_Black&Blue_summ.csv",
-    "MiikeSnow_Burial_summ.csv",
-    "MiikeSnow_SongForNoOne_summ.csv",
-    "MyMorningJacket_VictoryDance_summ.csv",
-    "NaiPalm_Atari_summ.csv",
-    "NaiPalm_CrossfireSoIntoYou_summ.csv",
-    "NaiPalm_Homebody_summ.csv",
-    "NaiPalm_Molasses_summ.csv",
-    "NaiPalm_WhenTheKnife_summ.csv",
-    "StPaulAndTheBrokenBones_AllIEverWonder_summ.csv",
-    "StPaulAndTheBrokenBones_MidnightOnTheEarth_summ.csv",
-    "WhiteStripes_SevenNationArmy_summ.csv"
+    "AaronCopland_FanfareForTheCommonMan",
+    "BenHarper_AnotherLonelyDayAcoustic",
+    "Bonobo_BambroKoyoGanda",
+    "Bonobo_Jets",
+    "Bonobo_Kerala",
+    "Bonobo_Migration",
+    "Bonobo_TenTigers",
+    "BreakOfReality_SpectrumOfTheSky",
+    "BrettDennen_Blessed",
+    "BrettDennen_DesertSunrise",
+    "BrettDennen_She'sMine",
+    "ChildishGambino_Redbone",
+    "ChildishGambino_StandTall",
+    "DukeEllington_Oclupaca",
+    "EnnioMorricone_TheEcstasyOfGold",
+    "EnnioMorricone_ThemeFromTheGood,TheBad&TheUgly",
+    "Florence+TheMachine_DogDaysAreOver",
+    "Flume_Helix",
+    "Flume_NeverBeLikeYou",
+    "HiatusKaiyote_Fingerprints",
+    "HiatusKaiyote_Molasses",
+    "JimiHendrix_CastlesMadeOfSand",
+    "JimiHendrix_LittleWing",
+    "JimiHendrix_VillanovaJunction",
+    "JohnColtrane_CentralParkWest",
+    "JohnColtrane_GiantSteps",
+    "JohnColtrane_InASentimentalMood",
+    "JohnColtrane_MyFavoriteThings",
+    "LittleBrother_BeAlright",
+    "LouisArmstrong_BlueberryHill",
+    "LouisArmstrong_WhatAWonderfulWorld",
+    "M83_AnotherWaveFromYou",
+    "M83_Outro",
+    "M83_SteveMcQueen",
+    "Matt&Kim_Daylight",
+    "MiikeSnow_Animal",
+    "MiikeSnow_Black&Blue",
+    "MiikeSnow_Burial",
+    "MiikeSnow_SongForNoOne",
+    "MyMorningJacket_VictoryDance",
+    "NaiPalm_Atari",
+    "NaiPalm_CrossfireSoIntoYou",
+    "NaiPalm_Homebody",
+    "NaiPalm_Molasses",
+    "NaiPalm_WhenTheKnife",
+    "StPaulAndTheBrokenBones_AllIEverWonder",
+    "StPaulAndTheBrokenBones_MidnightOnTheEarth",
+    "WhiteStripes_SevenNationArmy"
   ];
-  console.log(songs);
   let chartGroup = d3.select(".staticBody");
 
   let noteDataScale = d3
@@ -115,11 +113,11 @@
                   ((d["Octave"] == 0 ? 0.05 : d["Octave"]) / 10)
                 );
               }),
-              mean: d3.sum(leaves, function(d) {
-                return d["Mean"];
+              harmonic: d3.sum(leaves, function(d) {
+                return d["Harmonic Mean"];
               }),
-              median: d3.sum(leaves, function(d) {
-                return d["Median"];
+              percussive: d3.sum(leaves, function(d) {
+                return d["Percussive Mean"];
               })
             };
           })
@@ -131,8 +129,8 @@
   }
 
   function handleResize() {
-    var bodyWidth = Math.floor(window.innerWidth / 10);
-    var bodyHeight = Math.floor(window.innerHeight * 0.8);
+    var bodyWidth = Math.floor(window.innerWidth / 4);
+    var bodyHeight = Math.floor(window.innerHeight / 4);
 
     var minDim = Math.min(bodyWidth, bodyHeight);
 
@@ -150,18 +148,6 @@
       .scaleLinear()
       .domain([-1.1, 1.1])
       .range([yRange, 0]);
-
-    //   div = d3
-    //     .select("#staticBody")
-    //     .append("div")
-    //     .attr("class", "tooltip")
-    //     .style("opacity", 0)
-    //     .style("position", "absolute")
-    //     .style("text-align", "center")
-    //     .style("background", "whitesmoke")
-    //     .style("padding", "8px")
-    //     .style("border-radius", "8px")
-    //     .style("pointer-events", "none");
     return x, y;
   }
 
@@ -171,35 +157,63 @@
       .selectAll("#staticBody")
       .append("svg")
       .attr("id", title)
-      .attr("height", "200px")
-      .attr("width", "200px");
+      .attr("height", "300px")
+      .attr("width", "300px");
+    
     songContainer
-      .append("text")
-      .text(title)
-      .attr("transform", "translate(0,40)");
-
-    songContainer
-      .selectAll(".noteCircle")
+      .selectAll(".noteCircle_p")
       .data(d)
       .enter()
       .append("circle")
-      .attr("class", "noteCircle")
+      .attr("class", "noteCircle_p")
       .attr("id", d => {
         return d.key;
       })
       .attr("cx", function(d) {
-        return x(d.value["x"]);
+        return x(d.value["x"]*2);
       })
       .attr("cy", function(d) {
-        return y(d.value["y"]);
+        return y(d.value["y"]*2);
       })
       .attr("r", function(d) {
-        return `${d.value["mean"] / 2}vw`;
+        return `${d.value["percussive"]}vw`;
       })
-      .attr("fill", "black")
+      .attr("fill", "navy")
       .attr("stroke", "white")
       .attr("fill-opacity", function(d) {
-        return d.value["mean"];
+        return d.value["percussive"]*2;
       });
+
+      songContainer
+      .selectAll(".noteCircle_h")
+      .data(d)
+      .enter()
+      .append("circle")
+      .attr("class", "noteCircle_h")
+      .attr("id", d => {
+        return d.key;
+      })
+      .attr("cx", function(d) {
+        return x(d.value["x"]*2);
+      })
+      .attr("cy", function(d) {
+        return y(d.value["y"]*2);
+      })
+      .attr("r", function(d) {
+        return `${d.value["harmonic"]}vw`;
+      })
+      .attr("fill", "orange")
+      .attr("stroke", "white")
+      .attr("fill-opacity", function(d) {
+        return d.value["harmonic"];
+      });
+
+      songContainer
+      .append("text")
+      .text(title)
+      .attr("transform", "translate(0,40)")
+      .style("font-family","helvetica")
+      .style("font-size","1vw")
+
   }
 })();
