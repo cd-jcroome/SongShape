@@ -5,6 +5,7 @@
   let songName = [];
   let x = [];
   let y = [];
+  let color = [];
   // let songs = d3.csv("https://raw.githubusercontent.com/Jasparr77/SongShape/master/songList.csv", (songs)=>{return songs})
   let songs = [
     "AaronCopland_FanfareForTheCommonMan",
@@ -76,6 +77,7 @@
     ])
     .range([0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]);
 
+  
   for (var i = 0; i < songs.length; i++) {
     const title = songs[i];
     d3.csv(
@@ -87,15 +89,18 @@
         return d;
       }
     )
-      .then(d => {
+      .then(
+        d => {
+
         function anglePrep(d) {
           return (d / 180) * Math.PI;
         }
 
+        // transform the data
         var pointData = d3
           .nest()
           .key(function(d) {
-            return d["MIDI Note"];
+            return d["Note"]+"_"+d["MIDI Note"];
           })
           .rollup(function(leaves) {
             return {
@@ -127,7 +132,7 @@
       })
       .catch(err => console.error(err));
   }
-
+// TODO: figure out best sizing for window, pass those values throush to actual d3 viz.
   function handleResize() {
     var bodyWidth = Math.floor(window.innerWidth / 4);
     var bodyHeight = Math.floor(window.innerHeight / 4);
@@ -148,11 +153,35 @@
       .scaleLinear()
       .domain([-1.1, 1.1])
       .range([yRange, 0]);
+
     return x, y;
   }
 
-  function launchD3(d, title) {
+  function launchD3(d, title, color) {
     handleResize();
+
+    color = d3
+      .scaleSequential(d3.interpolateRainbow)
+
+    const notes = d3.scaleLinear() 
+      .domain([
+        "C",
+        "C#/Db",
+        "D",
+        "D#/Eb",
+        "E",
+        "F",
+        "F#/Gb",
+        "G",
+        "G#/Ab",
+        "A",
+        "A#/Bb",
+        "B"
+      ])
+      .range([color(0),color(.08333),color(.16667),color(.25),color(.33333),color(.41667),color(.5),color(.58333),color(.666667),color(.75),color(.83333),color(.9166667)])
+    
+    console.log(d)
+
     var songContainer = d3
       .selectAll("#staticBody")
       .append("svg")
@@ -178,13 +207,13 @@
       .attr("r", function(d) {
         return `${d.value["percussive"]}vw`;
       })
-      .attr("fill", "navy")
-      .attr("stroke", "white")
+      .attr("fill", "purple")
+      // .attr("stroke", "white")
       .attr("fill-opacity", function(d) {
-        return d.value["percussive"]*2;
+        return d.value["percussive"];
       });
 
-      songContainer
+    songContainer
       .selectAll(".noteCircle_h")
       .data(d)
       .enter()
@@ -202,10 +231,10 @@
       .attr("r", function(d) {
         return `${d.value["harmonic"]}vw`;
       })
-      .attr("fill", "orange")
-      .attr("stroke", "white")
+      .attr("fill", function(d){return notes( d.key.split("_",1))})
+      .attr("stroke", function(d){return notes( d.key.split("_",1))})
       .attr("fill-opacity", function(d) {
-        return d.value["harmonic"];
+        return d.value["harmonic"]*0.1;
       });
 
       songContainer
