@@ -6,6 +6,22 @@
   let x = [];
   let y = [];
   let color = [];
+  let notes = [
+    "C",
+    "C#/Db",
+    "D",
+    "D#/Eb",
+    "E",
+    "F",
+    "F#/Gb",
+    "G",
+    "G#/Ab",
+    "A",
+    "A#/Bb",
+    "B"
+  ]
+  let noteScale = [];
+
   // let songs = d3.csv("https://raw.githubusercontent.com/Jasparr77/SongShape/master/songList.csv", (songs)=>{return songs})
   let songs = [
     "AaronCopland_FanfareForTheCommonMan",
@@ -61,20 +77,7 @@
 
   let noteDataScale = d3
     .scaleOrdinal()
-    .domain([
-      "C",
-      "C#/Db",
-      "D",
-      "D#/Eb",
-      "E",
-      "F",
-      "F#/Gb",
-      "G",
-      "G#/Ab",
-      "A",
-      "A#/Bb",
-      "B"
-    ])
+    .domain(notes)
     .range([0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]);
 
   
@@ -163,24 +166,13 @@
     color = d3
       .scaleSequential(d3.interpolateRainbow)
 
-    const notes = d3.scaleLinear() 
-      .domain([
-        "C",
-        "C#/Db",
-        "D",
-        "D#/Eb",
-        "E",
-        "F",
-        "F#/Gb",
-        "G",
-        "G#/Ab",
-        "A",
-        "A#/Bb",
-        "B"
-      ])
-      .range([color(0),color(.08333),color(.16667),color(.25),color(.33333),color(.41667),color(.5),color(.58333),color(.666667),color(.75),color(.83333),color(.9166667)])
+    noteScale = d3.scaleOrdinal() 
+      .domain(notes)
+      .range([0,1/12,2/12,3/12,4/12,5/12,6/12,7/12,8/12,8/12,10/12,11/12,12/12])
     
     console.log(d)
+
+  console.log(color(noteScale(d[0].key.split("_",1))))
 
     var songContainer = d3
       .selectAll("#staticBody")
@@ -207,12 +199,11 @@
       .attr("r", function(d) {
         return `${d.value["percussive"]}vw`;
       })
-      .attr("fill", "purple")
-      // .attr("stroke", "white")
+      .attr("fill", "lightgrey")
+      .attr("stroke", "white")
       .attr("fill-opacity", function(d) {
         return d.value["percussive"];
       });
-
     songContainer
       .selectAll(".noteCircle_h")
       .data(d)
@@ -231,8 +222,8 @@
       .attr("r", function(d) {
         return `${d.value["harmonic"]}vw`;
       })
-      .attr("fill", function(d){return notes( d.key.split("_",1))})
-      .attr("stroke", function(d){return notes( d.key.split("_",1))})
+      .attr("fill", function(d){return color(noteScale( d.key.split("_",1)))})
+      .attr("stroke", function(d){return color(noteScale( d.key.split("_",1)))})
       .attr("fill-opacity", function(d) {
         return d.value["harmonic"]*0.1;
       });
