@@ -1,11 +1,13 @@
 "use strict";
 
 (() => {
-  let data = [];
-  let songName = [];
   let x = [];
   let y = [];
+  let xRange = [];
+  let yRange = [];
   let color = [];
+  let padding = 1.5;
+  let clusterPadding = 6;
   let notes = [
     "C",
     "C#/Db",
@@ -127,12 +129,13 @@
             };
           })
           .entries(d);
-
+        // Do the work
+        handleResize();
         launchD3(pointData, title);
       })
       .catch(err => console.error(err));
   }
-  // TODO: figure out best sizing for window, pass those values throush to actual d3 viz.
+  // TODO: figure out best sizing for window, pass those values through to actual d3 viz.
   function handleResize() {
     var bodyWidth = Math.floor(window.innerWidth / 3.5);
     var bodyHeight = Math.floor(window.innerHeight / 3.5);
@@ -154,12 +157,10 @@
       .domain([-1.1, 1.1])
       .range([yRange, 0]);
 
-    return x, y;
+    return x, y, minDim;
   }
 
   function launchD3(d, title, color) {
-    handleResize();
-
     color = d3.scaleSequential(d3.interpolateRainbow);
 
     noteScale = d3
@@ -182,7 +183,6 @@
       ]);
 
     console.log(d);
-    console.log(notes);
 
     var songContainer = d3
       .selectAll("#staticBody")
@@ -209,7 +209,6 @@
       })
       .attr("text-anchor", "middle")
       .attr("fill", "darkgrey");
-    // .attr("dy", ".31em");
 
     // percussive notes
     songContainer
@@ -222,10 +221,10 @@
         return d.key;
       })
       .attr("cx", function(d) {
-        return x(d.value["x"] * 2);
+        return x(d.value["x"]);
       })
       .attr("cy", function(d) {
-        return y(d.value["y"] * 2);
+        return y(d.value["y"]);
       })
       .attr("r", function(d) {
         return `${d.value["percussive"]}vw`;
@@ -247,10 +246,10 @@
         return d.key;
       })
       .attr("cx", function(d) {
-        return x(d.value["x"] * 2);
+        return x(d.value["x"]);
       })
       .attr("cy", function(d) {
-        return y(d.value["y"] * 2);
+        return y(d.value["y"]);
       })
       .attr("r", function(d) {
         return `${d.value["harmonic"]}vw`;
@@ -274,5 +273,25 @@
       .style("font-size", ".75vw")
       .style("fill", "black")
       .style("text-anchor", "middle");
+
+    // Circle Collisions!
+    var simulation = d3
+      .forceSimulation(d)
+      .force("charge", d3.forceManyBody().strength(1))
+      .force("center", d3.forceCenter(110, 110))
+      .force("collision", d3.forceCollide("100px"))
+      .on("tick", updateCircles);
+
+    function updateCircles() {
+      songContainer
+        .selectAll(".noteCircle_h")
+        .data(d)
+        .attr("cx", d => {
+          return d.value["x"] + x(d["vx"]);
+        })
+        .attr("cy", d => {
+          return d.value["y"] + y(d["vy"]);
+        });
+    }
   }
 })();
