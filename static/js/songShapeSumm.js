@@ -8,20 +8,7 @@
   let color = [];
   let padding = 1.5;
   let clusterPadding = 6;
-  let notes = [
-    "C",
-    "C#/Db",
-    "D",
-    "D#/Eb",
-    "E",
-    "F",
-    "F#/Gb",
-    "G",
-    "G#/Ab",
-    "A",
-    "A#/Bb",
-    "B"
-  ];
+  let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
   let noteScale = [];
 
   function anglePrep(d) {
@@ -86,6 +73,8 @@
     .domain(notes)
     .range([0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]);
 
+  console.log(noteDataScale("G#/Ab"));
+
   for (var i = 0; i < songs.length; i++) {
     const title = songs[i];
     d3.csv(
@@ -110,6 +99,7 @@
                 // x coordinate for note
                 return (
                   Math.sin(anglePrep(noteDataScale(d["Note"]))) *
+                  // (d["Octave"] / 10)
                   ((d["Octave"] == 0 ? 0.5 : d["Octave"]) / 10)
                 );
               }),
@@ -117,6 +107,7 @@
                 // y coordinate for note
                 return (
                   Math.cos(anglePrep(noteDataScale(d["Note"]))) *
+                  // (d["Octave"] / 10)
                   ((d["Octave"] == 0 ? 0.5 : d["Octave"]) / 10)
                 );
               }),
@@ -275,22 +266,43 @@
       .style("text-anchor", "middle");
 
     // Circle Collisions!
+
+    const forceX = d3
+      .forceX(d => {
+        return x(d.value["x"]);
+      })
+      .strength(0.015);
+
+    const forceY = d3
+      .forceY(d => {
+        return y(d.value["y"]);
+      })
+      .strength(0.015);
+
     var simulation = d3
       .forceSimulation(d)
-      .force("charge", d3.forceManyBody().strength(1))
-      .force("center", d3.forceCenter(110, 110))
-      .force("collision", d3.forceCollide("100px"))
+      // .force("charge", d3.forceManyBody().strength(0.7))
+      .force("x", forceX)
+      .force("y", forceY)
+      .force(
+        "collision",
+        d3.forceCollide().radius(function(d) {
+          return `${d.value["harmonic"]}vw`;
+        })
+      )
       .on("tick", updateCircles);
 
     function updateCircles() {
+      // var nodes = this.nodes();
+      // console.log(this.nodes);
       songContainer
         .selectAll(".noteCircle_h")
         .data(d)
         .attr("cx", d => {
-          return d.value["x"] + x(d["vx"]);
+          return d["x"];
         })
         .attr("cy", d => {
-          return d.value["y"] + y(d["vy"]);
+          return d["y"];
         });
     }
   }
