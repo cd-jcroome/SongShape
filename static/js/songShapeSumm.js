@@ -6,8 +6,7 @@
   let xRange = [];
   let yRange = [];
   let color = [];
-  let padding = 1.5;
-  let clusterPadding = 6;
+  let minDim = [];
   let notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
   let noteScale = [];
 
@@ -112,7 +111,7 @@
                 );
               }),
               harmonic: d3.sum(leaves, function(d) {
-                return d["Harmonic Mean"];
+                return d["Harmonic Mean"] * 10;
               }),
               percussive: d3.sum(leaves, function(d) {
                 return d["Percussive Mean"];
@@ -131,7 +130,7 @@
     var bodyWidth = Math.floor(window.innerWidth / 3.5);
     var bodyHeight = Math.floor(window.innerHeight / 3.5);
 
-    var minDim = Math.min(bodyWidth, bodyHeight);
+    minDim = Math.min(bodyWidth, bodyHeight);
 
     var yRange = minDim;
     var xRange = minDim;
@@ -179,8 +178,8 @@
       .selectAll("#staticBody")
       .append("svg")
       .attr("id", title)
-      .attr("height", "400px")
-      .attr("width", "400px");
+      .attr("height", minDim)
+      .attr("width", minDim);
 
     // Note labels
     songContainer
@@ -199,7 +198,9 @@
         return y(Math.cos(anglePrep(noteDataScale(d))));
       })
       .attr("text-anchor", "middle")
-      .attr("fill", "darkgrey");
+      .attr("fill", notes => {
+        return color(noteScale(notes));
+      });
 
     // percussive notes
     songContainer
@@ -243,7 +244,7 @@
         return y(d.value["y"]);
       })
       .attr("r", function(d) {
-        return `${d.value["harmonic"]}vw`;
+        return `${d.value["harmonic"]}`;
       })
       .attr("fill", function(d) {
         return color(noteScale(d.key.split("_", 1)));
@@ -252,14 +253,14 @@
         return color(noteScale(d.key.split("_", 1)));
       })
       .attr("fill-opacity", function(d) {
-        return d.value["harmonic"] * 0.2;
+        return d.value["harmonic"] / 30;
       });
 
     // Song Title
     songContainer
       .append("text")
       .text(title)
-      .attr("transform", "translate(125,125)")
+      .attr("transform", "translate(140,140)")
       .style("font-family", "helvetica")
       .style("font-size", ".75vw")
       .style("fill", "black")
@@ -271,33 +272,32 @@
       .forceX(d => {
         return x(d.value["x"]);
       })
-      .strength(0.015);
+      .strength(0.1);
 
     const forceY = d3
       .forceY(d => {
         return y(d.value["y"]);
       })
-      .strength(0.015);
+      .strength(0.1);
+
+    const forceR = d3.forceCollide().radius(d => {
+      return d.value["harmonic"];
+    });
 
     var simulation = d3
       .forceSimulation(d)
-      // .force("charge", d3.forceManyBody().strength(0.7))
+      .velocityDecay(0.2)
       .force("x", forceX)
       .force("y", forceY)
-      .force(
-        "collision",
-        d3.forceCollide().radius(function(d) {
-          return `${d.value["harmonic"]}vw`;
-        })
-      )
+      .force("center", d3.forceCenter(140, 140))
+      .force("collide", forceR)
       .on("tick", updateCircles);
 
     function updateCircles() {
-      // var nodes = this.nodes();
-      // console.log(this.nodes);
       songContainer
         .selectAll(".noteCircle_h")
         .data(d)
+        .transition()
         .attr("cx", d => {
           return d["x"];
         })
