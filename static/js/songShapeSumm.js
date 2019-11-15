@@ -252,6 +252,9 @@
       .attr("stroke", function(d) {
         return color(noteScale(d.key.split("_", 1)));
       })
+      .attr("stroke-opacity", function(d) {
+        return d.value["harmonic"] / 15;
+      })
       .attr("fill-opacity", function(d) {
         return d.value["harmonic"] / 30;
       });
@@ -281,7 +284,7 @@
       .strength(0.1);
 
     const forceR = d3.forceCollide().radius(d => {
-      return d.value["harmonic"];
+      return d.value["harmonic"] - 0.5;
     });
 
     var simulation = d3
