@@ -15,7 +15,8 @@ function gaussianize(inData)
         {
             let octave = parseFloat(inData[i].values[j].key);
             let count  = inData[i].values[j].value;
-
+            //this value 
+            
             for(let k = -20; k <= 20; ++k)
             {
                 let currentOctave = octave + k * 0.02;
@@ -54,18 +55,20 @@ window.addEventListener("load", () => {
 
 
     // asynchronous function, returns immediately
-    let temp = d3.csv("data/SevenNationArmy.csv");
+    let temp = d3.csv("data/Hallelujah.csv");
 
     // once the large csv file is loaded into memory
     temp.then((myData) => {
         // myProcessedData transforms data into the following form:
         // note_name --- octave --- count
         // both note_name and octave are sorted in ascending order
+        //rollup: count the number of elements by its category, groups and reduces the specified iterable of values into a Map from key to value.
         let myProcessedData = d3.nest()
             .key((d) => { return d.note_name;}).sortKeys(d3.ascending)
             .key((d) => { return parseFloat(d.octave);}).sortKeys(d3.ascending)
-            .rollup((v) => { return v.length;})
-            .entries(myData);
+            .rollup((v) => { return v.length;}) //only returns the value
+            //d3.rollup(data, v => v.length, d => d.name) return both key(name) and value: Map(3) {"key" => value}
+            .entries(myData); //mandated entries() method after nest()
 
         console.log(myProcessedData);
         myProcessedData = gaussianize(myProcessedData);
@@ -128,8 +131,9 @@ window.addEventListener("load", () => {
                                       // "#aaffc3",
                                       // "#e6beff",
                                       // "#fabebe"];
-            const predefinedColors = ["#f58231"];
+            const predefinedColors = ["#1abc9c"];
             let colorIdx = index % predefinedColors.length;
+            //this way the colorIdx won't exceed the total length of the predefined array
             return predefinedColors[colorIdx];
         }
 
@@ -142,8 +146,8 @@ window.addEventListener("load", () => {
                        .domain([minCount, maxCount])
                        .range([height, 0]);
 
-        // // here the d parameter in (d) refers to the element
-        // // {key: octave, value: count}
+        // here the d parameter in (d) refers to the element
+        // {key: octave, value: count}
         // let lineGenerator = d3.line()
                         // .x(function(d) {
                             // return xScale(parseFloat(d.key));
@@ -161,18 +165,20 @@ window.addEventListener("load", () => {
                         })
                         .y0(yScale(0.0));
 
-        let svgs = d3.select("#plot-div")
+        let svgsDrawingArea = d3.select("#plot-div")
                    .append("svg")
                      .attr("width", fullPlotWidth)
                      .attr("height", fullPlotHeight);
 
-        // svgs.selectAll(".my-line") results in
+        // svgs.selectAll(".XXX") results in
         // _groups (1 element)
         //     NodeList (empty NodeList array)
-        // svgs.select(".my-line") results in
+        // svgs.select(".XXX") results in
         // _groups (1 element)
         //     [] (empty array)
-        let mySelect = svgs.selectAll(".my-area");
+        // _groups (1 element)
+        //     [path, ...] (an array of path objects)
+        let mySelect = svgsDrawingArea.selectAll(".my-area");
 
         // axis
         let xAxis = d3.axisBottom(xScale)
@@ -180,8 +186,6 @@ window.addEventListener("load", () => {
         let yAxis = d3.axisLeft(yScale);
 
 
-        // _groups (1 element)
-        //     [path, ...] (an array of path objects)
         let mySvgs = mySelect
             .data(myProcessedData)
             .enter()
@@ -193,6 +197,7 @@ window.addEventListener("load", () => {
                     let xTranslate = fullPlotWidth / 2;
                     let yTranslate = fullPlotHeight / 2 - totalHeight;
                     return "translate(" + xTranslate + ", " + yTranslate + ") rotate(" + rotateAngle +" 0 " + totalHeight + ")";
+                    //rotate followed by three parameters: 1.rotate angle 2.x coordinate 3.y coordinate(totalHeight is yAxis 0 coordinate)
               });
 
         mySvgs.append("text")
@@ -212,31 +217,32 @@ window.addEventListener("load", () => {
         let areaPlots = mySvgs.append("g")
                           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                           .append("path");
+                          //"path" is a virtual placeholder for later to generate path
 
         let domResult = document.querySelector("#plot-div");
-        console.log(domResult);
+        //querySelector needs to be distinguished with selectAll, it return the real thing(first Element within the document that matches the specified selector, or group of selectors).
 
         // set up areaPlots
         // here the d parameter in (d) refers to the element
         // {key: note_name, values: [obj1, obj2 ...]}
         // where obj is {key: octave, value: count}
+        
         areaPlots.attr("d", (d, i) => { // define path details https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
-                        let pathData = areaGenerator(d.values);
-                        return pathData;
+                        let areaData = areaGenerator(d.values);
+                        return areaData;
                     })
-              .attr("stroke", (d, i) => { // each line is assigned a predefined color
-                    let color = pickColor(i);
-                    console.log(color);
+              /* .attr("stroke", (d, i) => { // each line is assigned a predefined color
+                    let color = pickColor(i); //not []!
+                    //console.log(color);
                     return color;
               })
-              .attr("stroke-width", 1)
-              .attr("fill", (d, i) => { // each line is assigned a predefined color
+              .attr("stroke-width", 1) */
+              .attr("fill", (d, i) => { // each area is assigned a predefined color
                     let color = pickColor(i);
-                    console.log(color);
                     return color;
               })
-              .attr("stroke-linecap", "round")
-              .attr("stroke-linejoin", "round");
+/*               .attr("stroke-linecap", "round")
+              .attr("stroke-linejoin", "round"); */
 
     }); // end then()
 }); // end addEventListener()
