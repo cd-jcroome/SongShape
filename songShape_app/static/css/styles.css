@@ -1,4 +1,20 @@
 #welcomeGroup h1 {
-  color: magenta;
+  color: #F76C6C;
   font-size: 3vw;
+  font-family: 'Patrick Hand SC', cursive;
+}
+
+body {
+    background:  #24305E !important;
+    font-family: 'Patrick Hand', cursive;
+}
+
+div#mthdGroup{
+    color: #123C69;
+}
+
+#welcomeText{
+    color: #A8D0E6;
+    font-size: 1.5vw;
+    font-family: 'Patrick Hand', cursive;
 }
