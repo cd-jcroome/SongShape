@@ -1,20 +1,45 @@
 /* selector reference: https://www.w3schools.com/cssref/css_selectors.asp */
+#welcomeTitle {
+    text-align: left;
+    font-size:4vw;
+    color: #AC3B61;
+    font-family:'Patrick Hand SC', cursive;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 70px;
+}
+
+#welcomeText {
+    text-align: left;
+    color: #123C69;
+    font-size: 1.5vw;
+    font-family: 'Patrick Hand', cursive;
+    margin-left: 30px;
+    margin-right: 30px;
+}
 
 body {
-    font-size: 20px;
-    font-family: "Century Gothic", san-serif;
+    font-size: 1.5vw;
+    font-family: 'Patrick Hand', cursive;
+    background: #EEE2DC;
+}
+
+#my-media {
+    width: 100%;
+    height: auto;
+    margin-left: 20px;
 }
 
 .bubu-button {
-    background-color: #4CAF50;
+    background-color: #EDC7B7;
     border: none;
-    color: white;
+    color: #AC3B61;
+    font-family: 'Patrick Hand', cursive;
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 20px;
-    font-family: "Century Gothic", san-serif;
 }
 
 .bubu-button:disabled {
@@ -26,18 +51,39 @@ table {
     border-collapse: collapse;
 }
 
-tr:nth-child(odd) {
-    background-color: #f2f2f2;
+/* tr:nth-child(odd) {
+    background-color: #BAB2B5;
 }
-
+ */
 .flex-container {
     display: flex;
 }
 
 .flex-container div {
     flex-basis: 30%;
+    
 }
 
 div * {
 	margin: 10px;
 }
+
+#plot-div {
+    width: 100%;
+}
+
+.myXAxis {
+    color: #BAB2B5; 
+}
+
+.myXAxis path {
+    stroke: #BAB2B5;
+    stroke-width: 2px;    
+}
+
+.axisLabel {
+    fill: #00ff00; 
+}
+
+
+

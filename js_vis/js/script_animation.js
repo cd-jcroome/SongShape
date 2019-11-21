@@ -379,9 +379,9 @@ function MusicPlot()
               .attr("transform", "translate(" + this.totalWidth + "," + (this.margin.top + this.height) + ")");
 
         this.myGroups.append("g")
-              .attr("class", "xAxis")
+              .attr("class", "myXAxis")
               .attr("transform", "translate(" + this.margin.left + "," + (this.margin.top + this.height) + ")")
-              .call(this.xAxis);
+              .call(this.xAxis);        
 
         // set up plotCollection
         // here the d parameter in (d) refers to the element
@@ -486,28 +486,29 @@ function MusicPlot()
                 .attr("stroke", (d, i) => { // each line is assigned a predefined color
                     if(d["octaveUpdated"])
                     {
-                        return this.colorWhenUpdated;
+                        return pickColor(i);
                     }
                     else
                     {
-                        return pickColor(i);
+                        return "#000000";
                     }
                 })
                 .attr("fill", (d, i) => { // each line is assigned a predefined color
                     if(d["octaveUpdated"])
                     {
-                        return this.colorWhenUpdated;
+                        return pickColor(i);
                     }
                     else
                     {
-                        return pickColor(i);
+                        return "#000000";
                     }
                 });
 
         this.myText.attr("font-size", (d) => {
                         if(d["noteUpdated"])
                         {
-                            return "40px";
+                            // return "40px";
+                            return "20px";
                         }
                         else
                         {
