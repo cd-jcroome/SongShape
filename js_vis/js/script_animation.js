@@ -92,11 +92,13 @@ function pickColor(index)
                               // "#e6beff",
                               // "#fabebe"];
 
-    const predefinedColors = ["#1e7c4b",
-                            "#8ec13d",
-                            "#c7e254",
-                            "#f9db65",
-                            "#ecbc39"];
+    const predefinedColors = ["#374785",
+                            "#5AB9EA",
+                            "#84CEEB",
+                            "#EDC787",
+                            "#E98074",
+                            "#F76C6C",
+                            "#C96567"];
 
     let colorIdx = index % predefinedColors.length;
     return predefinedColors[colorIdx];
@@ -110,10 +112,10 @@ function MusicPlot()
     this.checkBox.checked = true;
 
     this.margin = {top: 30, right: 30, bottom: 30, left: 30};
-    this.totalWidth = 300;
-    this.totalHeight = 150;
-    this.fullPlotWidth = 800;
-    this.fullPlotHeight = 800;
+    this.totalWidth = 270;
+    this.totalHeight = 140;
+    this.fullPlotWidth = 670;
+    this.fullPlotHeight = 670;
     this.width  = this.totalWidth  - this.margin.left - this.margin.right;
     this.height = this.totalHeight - this.margin.top  - this.margin.bottom;
 
@@ -133,7 +135,7 @@ function MusicPlot()
     this.myText = null;
 
     this.numHalfGaussian = 20;
-    this.binSize = 0.02;
+    this.binSize = 0.03;
     this.numOctave = -1;
     this.numElementPerOctave = -1;
 
@@ -142,7 +144,9 @@ function MusicPlot()
     this.debugCounter = 0;
 
     this.colorWhenUpdated = "#000000";
-    this.colorWhenNotUpdated = "#f58231";
+    //this.colorWhenNotUpdated = "#f58231";
+    
+    this.octaveList = [];
 
     //------------------------------------------------------------
     // selectedData
@@ -261,7 +265,7 @@ function MusicPlot()
                         {
                             let up = elRef2["octaveData"][idx]["octavePoint"] - elRef2["octaveMain"];
                             up = up * up;
-                            const sigma = 0.1;
+                            const sigma = 0.15;
                             let down = 2.0 * sigma * sigma;
                             let temp = - up / down;
                             let currentCount = elRef2["countMain"] * Math.exp(temp);
@@ -317,6 +321,12 @@ function MusicPlot()
         this.numElementPerOctave = 2 * this.numHalfGaussian + 1;
 
         this.initializeData(selectedData);
+        
+        // used specifically for legend
+        for(let i = this.extrema.minOctave; i <= this.extrema.maxOctave; ++i)
+        {
+            this.octaveList.push(i);
+        }        
 
         this.xScale = d3.scaleLinear()
                        .domain([this.extrema.minOctave, this.extrema.maxOctave])
@@ -329,7 +339,9 @@ function MusicPlot()
         // axis
         this.xAxis = d3.axisBottom(this.xScale)
                     .ticks(this.numOctave);
+
         this.yAxis = d3.axisLeft(this.yScale);
+        
 
         // // this.areaGenerator = d3.line()
                         // // .x((d) => {
@@ -353,6 +365,7 @@ function MusicPlot()
 
         this.svgTop = d3.select("#plot-div")
                     .append("svg")
+                    .attr("class", "plot-area")
                     .attr("width", this.fullPlotWidth)
                     .attr("height", this.fullPlotHeight);
 
@@ -382,6 +395,7 @@ function MusicPlot()
               .attr("class", "myXAxis")
               .attr("transform", "translate(" + this.margin.left + "," + (this.margin.top + this.height) + ")")
               .call(this.xAxis);        
+        
 
         // set up plotCollection
         // here the d parameter in (d) refers to the element
@@ -402,8 +416,9 @@ function MusicPlot()
                                 return d["octaveList"];
                             })
                             .enter()
-                            .append("path");
+                            .append("path");   
 
+            
         let domResult = document.querySelector("#plot-div");
         console.log(domResult);
 
@@ -443,6 +458,42 @@ function MusicPlot()
                 // .attr("fill", "none")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-linejoin", "round");
+   
+                                             
+        this.legend = d3.select("#legend-div")
+                        .append("svg")
+                        .attr("width", 200)
+                        .attr("height", 800);
+        
+        this.legend.append("text")
+            .text("Octave")
+            .attr("transform", "translate(0, 20)");
+            
+        this.legend.selectAll("g")
+            .data(this.octaveList)
+            .enter()
+            .append("g")
+            .attr("class", "legend")
+            .attr("transform", (d, i) => {
+                return `translate(0, ${40 + i * 40})`;
+            });
+         
+        this.legend.selectAll(".legend")
+            .append("rect")
+            .attr("width", 20)
+            .attr("height", 20)
+            .style("fill", (d, i) => {
+                return pickColor(i);
+            });
+            
+        this.legend.selectAll(".legend").append("text")
+            .text((d) => {
+                return d.toString();
+            })
+            .attr("text-anchor", "right")
+            .attr("transform", (d, i) => {
+                return "translate(40, 20)";
+            });            
     };
 
     //------------------------------------------------------------
@@ -486,21 +537,21 @@ function MusicPlot()
                 .attr("stroke", (d, i) => { // each line is assigned a predefined color
                     if(d["octaveUpdated"])
                     {
-                        return pickColor(i);
+                        return this.colorWhenUpdated;
                     }
                     else
                     {
-                        return "#000000";
+                        return pickColor(i);
                     }
                 })
                 .attr("fill", (d, i) => { // each line is assigned a predefined color
                     if(d["octaveUpdated"])
                     {
-                        return pickColor(i);
+                        return this.colorWhenUpdated;
                     }
                     else
                     {
-                        return "#000000";
+                        return pickColor(i);
                     }
                 });
 
@@ -508,11 +559,11 @@ function MusicPlot()
                         if(d["noteUpdated"])
                         {
                             // return "40px";
-                            return "20px";
+                            return "25px";
                         }
                         else
                         {
-                            return "20px";
+                            return "25px";
                         }
                     })
                     .attr("font-weight", (d) => {
