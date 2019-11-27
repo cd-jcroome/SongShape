@@ -64,7 +64,7 @@
     "StPaulAndTheBrokenBones_MidnightOnTheEarth",
     "WhiteStripes_SevenNationArmy"
   ];
-  let chartGroup = d3.select("#scroll");
+  let chartGroup = d3.select("#staticBody");
 
   let noteDataScale = d3
     .scaleOrdinal()
