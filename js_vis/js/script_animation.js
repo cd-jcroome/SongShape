@@ -4,10 +4,10 @@
 
 // localhost:8000
 
-// let csvFileName = "SevenNationArmy.csv"
+//let csvFileName = "SevenNationArmy.csv"
 let csvFileName = "../py/harmonic_result.csv"
 
-// let mediaName = "SevenNationArmy.mp3"
+//let mediaName = "SevenNationArmy.mp3"
 let mediaName = "../data/TheCatConcerto.mp4"
 
 //------------------------------------------------------------
@@ -75,6 +75,31 @@ function findExtrema(myData)
 }
 
 //------------------------------------------------------------
+//------------------------------------------------------------
+function findMaxCountInterval(myData)
+{
+    let maxCount = -1;
+
+    myData.forEach((d, i, dSelfArray) => {
+        d["octaveList"].forEach((dd, j, ddSelfArray) => {
+            dd["octaveData"].forEach((ddd) => {
+                if(ddd["countInterval"] > maxCount)
+                {
+                    maxCount = ddd["countInterval"];
+                }
+            });
+        });
+    });
+
+    if(maxCount == 0)
+    {
+        maxCount = 1;
+    }
+
+    return maxCount;
+}
+
+//------------------------------------------------------------
 // predefine color schemes
 //------------------------------------------------------------
 function pickColor(index)
@@ -97,8 +122,8 @@ function pickColor(index)
                             "#84CEEB",
                             "#EDC787",
                             "#E98074",
-                            "#F76C6C",
-                            "#C96567"];
+                            "#AC3B43",
+                            "#AC3B7D"];
 
     let colorIdx = index % predefinedColors.length;
     return predefinedColors[colorIdx];
@@ -121,17 +146,21 @@ function MusicPlot()
 
     this.extrema = null;
     this.extremaCached = null;
+    this.extremaInterval = null;
+
+    this.myData = null;
 
     this.xScale = null;
     this.yScale = null;
     this.xAxis  = null;
     this.yAxis  = null;
     this.areaGenerator = null;
+    this.areaGeneratorMirrored = null;
     this.svgTop = null;
     this.mySvgs = null;
     this.myGroups = null;
-    this.myData = null;
     this.plotCollection = null;
+    this.plotCollectionMirrored = null;
     this.myText = null;
 
     this.numHalfGaussian = 20;
@@ -143,9 +172,9 @@ function MusicPlot()
 
     this.debugCounter = 0;
 
-    this.colorWhenUpdated = "#000000";
+    //this.colorWhenUpdated = "#000000";
     //this.colorWhenNotUpdated = "#f58231";
-    
+
     this.octaveList = [];
 
     //------------------------------------------------------------
@@ -164,7 +193,9 @@ function MusicPlot()
     //         "octaveUpdated"
     //         "octaveData"
     //             "octavePoint"
-    //             "count"
+    //             "count" --> accumulated count
+    //             "countCached"
+    //             "countInterval" --> count over small interval
     //------------------------------------------------------------
     this.initializeData = (selectedData) => {
         this.myData = new Array(selectedData.length).fill(null);
@@ -190,6 +221,8 @@ function MusicPlot()
 
                     dddObj["octavePoint"] = ddObj["octaveMain"] + (k - this.numHalfGaussian) * this.binSize;
                     dddObj["count"] = 0;
+                    dddObj["countCached"] = 0;
+                    dddObj["countInterval"] = 0;
 
                     dddArraySelf[k] = dddObj;
                 });
@@ -224,6 +257,7 @@ function MusicPlot()
     //         "octaveData"
     //             "octavePoint"
     //             "count"
+    //             "countInterval" --> count over small interval
     //------------------------------------------------------------
     this.gaussianizeData = (selectedData) => {
         // zero
@@ -284,6 +318,16 @@ function MusicPlot()
                 });
             }
         });
+
+        // update countInterval and countCached
+        this.myData.forEach((d, i, dSelfArray) => {
+            d["octaveList"].forEach((dd, j, ddSelfArray) => {
+                dd["octaveData"].forEach((ddd) => {
+                    ddd["countInterval"] = ddd["count"] - ddd["countCached"];
+                    ddd["countCached"] = ddd["count"];
+                });
+            });
+        });
     };
 
     //------------------------------------------------------------
@@ -321,12 +365,12 @@ function MusicPlot()
         this.numElementPerOctave = 2 * this.numHalfGaussian + 1;
 
         this.initializeData(selectedData);
-        
+
         // used specifically for legend
         for(let i = this.extrema.minOctave; i <= this.extrema.maxOctave; ++i)
         {
             this.octaveList.push(i);
-        }        
+        }
 
         this.xScale = d3.scaleLinear()
                        .domain([this.extrema.minOctave, this.extrema.maxOctave])
@@ -334,14 +378,18 @@ function MusicPlot()
 
         this.yScale = d3.scaleLinear()
                        .domain([0, this.extrema.maxCount])
-                       .range([this.height, 0]);
+                       .range([this.height / 2, 0]);
+
+        this.yScaleMirrored = d3.scaleLinear()
+                       .domain([0, this.extrema.maxCount])
+                       .range([this.height / 2, this.height]);
 
         // axis
         this.xAxis = d3.axisBottom(this.xScale)
                     .ticks(this.numOctave);
 
         this.yAxis = d3.axisLeft(this.yScale);
-        
+
 
         // // this.areaGenerator = d3.line()
                         // // .x((d) => {
@@ -363,6 +411,14 @@ function MusicPlot()
                         })
                         .y0(this.yScale(0.0));
 
+        this.lineGeneratorMirrored = d3.line()
+                        .x((d) => {
+                            return this.xScale(parseFloat(d["octavePoint"]));
+                        })
+                        .y((d) => {
+                            return this.yScaleMirrored(d["countInterval"]);
+                        });
+
         this.svgTop = d3.select("#plot-div")
                     .append("svg")
                     .attr("class", "plot-area")
@@ -381,7 +437,8 @@ function MusicPlot()
                     let rotateAngle = 360.0 / this.myData.length * i;
                     let xTranslate = this.fullPlotWidth / 2;
                     let yTranslate = this.fullPlotHeight / 2 - this.totalHeight;
-                    return "translate(" + xTranslate + ", " + yTranslate + ") rotate(" + rotateAngle +" 0 " + this.totalHeight + ")";
+                    return `translate(${xTranslate}, ${yTranslate}) rotate(${rotateAngle} 0 ${this.totalHeight})`;
+                    // return `translate(0, 0) rotate(0 0 0)`;
               });
 
         this.myText = this.myGroups.append("text")
@@ -389,13 +446,17 @@ function MusicPlot()
               .text((d) => {
                   return d["noteName"];
               })
-              .attr("transform", "translate(" + this.totalWidth + "," + (this.margin.top + this.height) + ")");
+              .attr("transform", `translate(${this.totalWidth}, ${this.margin.top + this.height})`);
 
-        this.myGroups.append("g")
-              .attr("class", "myXAxis")
-              .attr("transform", "translate(" + this.margin.left + "," + (this.margin.top + this.height) + ")")
-              .call(this.xAxis);        
-        
+        // this.myGroups.append("g")
+              // .attr("class", "myXAxis")
+              // .attr("transform", `translate(${this.margin.left}, ${this.margin.top + this.height})`)
+              // .call(this.xAxis);
+
+        // this.myGroups.append("g")
+              // .attr("class", "myYAxis")
+              // .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
+              // .call(this.yAxis);
 
         // set up plotCollection
         // here the d parameter in (d) refers to the element
@@ -410,15 +471,25 @@ function MusicPlot()
         //             "count"
         this.plotCollection = this.myGroups.append("g")
                               .attr("class", "plot")
-                              .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
+                              .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
                             .selectAll("path")
                             .data((d) => {
                                 return d["octaveList"];
                             })
                             .enter()
-                            .append("path");   
+                            .append("path");
 
-            
+        this.plotCollectionMirrored = this.myGroups.append("g")
+                              .attr("class", "plot")
+                              .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
+                            .selectAll("path")
+                            .data((d) => {
+                                return d["octaveList"];
+                            })
+                            .enter()
+                            .append("path");
+
+
         let domResult = document.querySelector("#plot-div");
         console.log(domResult);
 
@@ -437,7 +508,7 @@ function MusicPlot()
                 .attr("stroke", (d, i) => { // each line is assigned a predefined color
                     if(d["octaveUpdated"])
                     {
-                        return this.colorWhenUpdated;
+                        return pickColor(i);
                     }
                     else
                     {
@@ -448,7 +519,7 @@ function MusicPlot()
                 .attr("fill", (d, i) => { // each line is assigned a predefined color
                     if(d["octaveUpdated"])
                     {
-                        return this.colorWhenUpdated;
+                        return pickColor(i);
                     }
                     else
                     {
@@ -458,17 +529,36 @@ function MusicPlot()
                 // .attr("fill", "none")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-linejoin", "round");
-   
-                                             
+
+        this.plotCollectionMirrored.attr("d", (d, i) => { // define path details https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+                        let pathData = this.lineGeneratorMirrored(d["octaveData"]);
+                        return pathData;
+                    })
+                .attr("stroke", (d, i) => { // each line is assigned a predefined color
+                    if(d["octaveUpdated"])
+                    {
+                        return pickColor(i);
+                    }
+                    else
+                    {
+                        return pickColor(i);
+                    }
+                })
+                .attr("stroke-width", 2)
+                .attr("fill", "none")
+                .attr("stroke-linecap", "round")
+                .attr("stroke-linejoin", "round");
+
+
         this.legend = d3.select("#legend-div")
                         .append("svg")
                         .attr("width", 200)
                         .attr("height", 800);
-        
+
         this.legend.append("text")
             .text("Octave")
             .attr("transform", "translate(0, 20)");
-            
+
         this.legend.selectAll("g")
             .data(this.octaveList)
             .enter()
@@ -477,7 +567,7 @@ function MusicPlot()
             .attr("transform", (d, i) => {
                 return `translate(0, ${40 + i * 40})`;
             });
-         
+
         this.legend.selectAll(".legend")
             .append("rect")
             .attr("width", 20)
@@ -485,7 +575,7 @@ function MusicPlot()
             .style("fill", (d, i) => {
                 return pickColor(i);
             });
-            
+
         this.legend.selectAll(".legend").append("text")
             .text((d) => {
                 return d.toString();
@@ -493,7 +583,7 @@ function MusicPlot()
             .attr("text-anchor", "right")
             .attr("transform", (d, i) => {
                 return "translate(40, 20)";
-            });            
+            });
     };
 
     //------------------------------------------------------------
@@ -526,7 +616,11 @@ function MusicPlot()
 
         this.yScale = d3.scaleLinear()
                        .domain([0, this.extrema.maxCount])
-                       .range([this.height, 0]);
+                       .range([this.height / 2, 0]);
+
+        this.yScaleMirrored = d3.scaleLinear()
+                       .domain([0, findMaxCountInterval(this.myData)])
+                       .range([this.height / 2, this.height]);
 
         this.mySvgs.data(this.myData);
 
@@ -537,7 +631,7 @@ function MusicPlot()
                 .attr("stroke", (d, i) => { // each line is assigned a predefined color
                     if(d["octaveUpdated"])
                     {
-                        return this.colorWhenUpdated;
+                        return pickColor(i);
                     }
                     else
                     {
@@ -547,7 +641,22 @@ function MusicPlot()
                 .attr("fill", (d, i) => { // each line is assigned a predefined color
                     if(d["octaveUpdated"])
                     {
-                        return this.colorWhenUpdated;
+                        return pickColor(i);
+                    }
+                    else
+                    {
+                        return pickColor(i);
+                    }
+                });
+
+        this.plotCollectionMirrored.attr("d", (d, i) => { // define path details https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+                        let pathData = this.lineGeneratorMirrored(d["octaveData"]);
+                        return pathData;
+                    })
+                .attr("stroke", (d, i) => { // each line is assigned a predefined color
+                    if(d["octaveUpdated"])
+                    {
+                        return pickColor(i);
                     }
                     else
                     {
