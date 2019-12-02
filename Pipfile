@@ -16,6 +16,11 @@ librosa = "*"
 jupyter = "*"
 matplotlib = "*"
 flask = "*"
+gunicorn = "*"
+flask-sqlalchemy = "*"
+psycopg2 = "*"
+flask-heroku = "*"
+requests-oauthlib = "*"
 
 [requires]
 python_version = "3.7"

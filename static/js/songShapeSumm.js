@@ -14,7 +14,6 @@
     return (d / 180) * Math.PI;
   }
 
-  // let songs = d3.csv("https://raw.githubusercontent.com/Jasparr77/SongShape/master/songList.csv", (songs)=>{return songs})
   let songs = [
     "AaronCopland_FanfareForTheCommonMan",
     "BenHarper_AnotherLonelyDayAcoustic",
@@ -65,7 +64,7 @@
     "StPaulAndTheBrokenBones_MidnightOnTheEarth",
     "WhiteStripes_SevenNationArmy"
   ];
-  let chartGroup = d3.select(".staticBody");
+  let chartGroup = d3.select("#staticBody");
 
   let noteDataScale = d3
     .scaleOrdinal()

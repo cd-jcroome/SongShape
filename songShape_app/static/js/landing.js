@@ -1,21 +1,17 @@
 "use strict";
 (() => {
-  const chartSpace = d3.select("#scroll");
   const scroller = scrollama();
+  const chartSpace = d3.select("#scroll");
   const step = chartSpace.selectAll(".step");
-  const headerDuration = 500;
-  const textDuration = 1500;
+  const headerDuration = 300;
+  const textDuration = 400;
 
-  let data = [];
+  let allSongs = [];
+  let response = [];
   let windowHeight = [];
   let windowWidth = [];
   let stepHeight = [];
   let stepWidth = [];
-
-  // d3.json().then(
-  init();
-  console.log(step);
-  // );
 
   function handleResize() {
     const windowWidth = +window.innerWidth;
@@ -26,7 +22,7 @@
       bottom: windowHeight * 0.05,
       left: windowWidth * 0.05
     };
-    stepHeight = windowHeight * 0.75;
+    stepHeight = windowHeight * 0.95;
     stepWidth = windowWidth * 0.95;
 
     chartSpace
@@ -68,10 +64,19 @@
       .attr("data-step", "d")
       .style("height", `${stepHeight}px`)
       .style("width", `${stepWidth}px`);
+
+    chartSpace
+      .append("div")
+      .attr("id", "aboutGroup")
+      .attr("class", "step")
+      .attr("data-step", "d")
+      .style("height", `${stepHeight}px`)
+      .style("width", `${stepWidth}px`);
   }
 
   function welcome() {
     chartSpace.selectAll("#mthdText").remove();
+    chartSpace.selectAll("#welcomeText").remove();
     let welcomeText = d3
       .selectAll("#welcomeGroup")
       .append("g")
@@ -90,7 +95,7 @@
     welcomeText
       .append("p")
       .text(
-        "That's the riddle we set out to answer with this project. Through many different trials and iterations, this site is our attempt to share what we found with you. \n\nScroll down to begin."
+        "That's the question we set out to answer with this project. Through many different trials and iterations, this site is our attempt to share what we found with you. \n\nScroll down to begin."
       )
       .attr("text-align", "left")
       .style("opacity", "0")
@@ -102,6 +107,7 @@
   function methodology() {
     chartSpace.selectAll("#welcomeText").remove();
     chartSpace.selectAll("#legendText").remove();
+    chartSpace.selectAll("#mthdText").remove();
     let mthdText = d3
       .selectAll("#mthdGroup")
       .append("g")
@@ -128,6 +134,7 @@
   function legend() {
     chartSpace.selectAll("#mthdText").remove();
     chartSpace.selectAll("#universeText").remove();
+    chartSpace.selectAll("#legendText").remove();
     let legendText = d3
       .selectAll("#legendGroup")
       .append("g")
@@ -151,27 +158,24 @@
       .style("opacity", "1");
   }
 
-  function universe() {
-    chartSpace.selectAll("#legendText").remove();
-    let universeText = d3
-      .selectAll("#universeGroup")
+  function about() {
+    let aboutText = d3
+      .selectAll("#aboutGroup")
       .append("g")
-      .attr("id", "universeText")
+      .attr("id", "aboutText")
       .style("transform", `translate(0,${windowHeight / 2}px)`);
 
-    universeText
+    aboutText
       .append("h1")
-      .text("AudioForma Universe")
+      .text("About our Team")
       .style("opacity", "0")
       .transition()
       .duration(headerDuration)
       .style("opacity", "1");
 
-    universeText
+    aboutText
       .append("p")
-      .text(
-        "Here's where we'll let the users navigate the universe of data we've prepared :)."
-      )
+      .text("Here's where we'll brag on ourselves a little bit (or a lot!).")
       .style("opacity", "0")
       .transition()
       .duration(textDuration)
@@ -195,10 +199,11 @@
         break; // universe viz
       case 3:
         console.log("universe");
-        universe();
+
         break;
       case 4:
         console.log("about");
+        about();
         break;
     }
   }
@@ -211,8 +216,7 @@
 
   function init() {
     setupStickyfill();
-
-    // 1. force a resize on load to ensure proper dimensions are sent to scrollama
+    // 1. force a resize on  to ensure proper dimensions are sent to scrollama
     handleResize();
 
     buildSections();
@@ -225,11 +229,12 @@
         graphic: ".scroll__graphic",
         text: ".scroll__text",
         step: ".step",
-        debug: true
+        debug: false
       })
       // 3. bind scrollama event handlers (this can be chained like below)
       .onStepEnter(handleStepEnter);
     // setup resize event
     window.addEventListener("resize", handleResize);
   }
+  init();
 })();
