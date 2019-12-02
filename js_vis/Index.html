@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="css/style.css">    
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Patrick+Hand|Patrick+Hand+SC&display=swap" rel="stylesheet">
+    <script src="js/script_animation.js"></script>
+    
+</head>
+
+
+<body>
+
+<h1 id= "welcomeTitle">What does a song look like?</h1>
+<p id="welcomeText">"That's the riddle we set out to answer with this project. Through many different trials and iterations, this site is our attempt to share what we found with you. 
+<br>Scroll down to begin.
+</p>
+
+<div class="flex-container">
+    <div>
+		<video id="my-media">
+			<source type = "video/mp4">
+		</video>
+
+        <button type="button" id="start" class='bubu-button'>start</button>
+
+        <table id="music-info">
+            <tr>
+                <td>
+                    <label>frame rate per second (FPS)</label>
+                </td>
+                <td>
+                    <p id="fps"></p>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>time elapsed [second]</label>
+                </td>
+                <td>
+                    <p id="time-elapsed"></p>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>music length [second]</label>
+                </td>
+                <td>
+                    <p id="music-length"></p>
+                </td>
+            </tr>
+        </table>
+
+        <div>
+            <input type="checkbox" id="my-check-box">
+            Show absolute value on Y axis
+        </div>
+    </div>
+
+    <div>
+        <div id="plot-div"></div>
+    </div>
+    
+    <div>
+        <div id="legend-div">
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+
+</html>
