@@ -15,7 +15,7 @@ app.secret_key = "audioForma"
 
 print(socket.gethostname())
 
-if socket.gethostname()=="iMac.local":
+if socket.gethostname() in ["iMac.local","APJ2HV2R68BAFD", "LAPTOP-RP2K2BF3"]:
     from local_spotify_params import key, secret_key
     spotify_key = key
     spotify_secret_key = secret_key 
