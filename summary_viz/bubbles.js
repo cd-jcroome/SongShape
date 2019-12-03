@@ -38,7 +38,7 @@
 		{song: "Yellow Submarine", artist: "The Beatles", genre: "Rock"},
 		{song: "Here Comes the Sun", artist: "The Beatles", genre: "Rock"},
 		{song: "Landslide", artist: "Fleetwood Mac", genre: "Rock"},
-		{song: "Billy the Kid", artist: "Billy Joel", genre: "Rock"},
+		{song: "She's Always a Woman", artist: "Billy Joel", genre: "Rock"},
 		{song: "Another Story", artist: "The Head and the Heart", genre: "Indie"},
 		{song: "The Ancestor", artist: "Darlingside", genre: "Indie"},
 		{song: "The Company We Keep", artist: "Darlingside", genre: "Indie"}
@@ -60,14 +60,8 @@
 		.append("g")
 		.attr("transform", "translate(0,0)")
 
-
-	// group data by genre
-    var genre = d3.nest()
-        .key(function(d) { return d.genre; })
-        .rollup(function(v) { return v.length; })
-        .entries(data);
-
-    console.log(genre);
+	// initiate ability to toggle between graphs
+	var selectBrowseType = d3.select("#browse-type").on("change", updateViz);
 
 
 	// map each genre to a color
@@ -75,24 +69,71 @@
         .domain(["Rock", "Pop", "Country", "Indie", "Funk", "Folk", "Rap", "R&B", "Classical", "Jazz"]) 
         .range(["gold", "lightgreen", "red", "orange", "purple", "green", "blue", "pink", "lightblue", "navy"]);
 
-
 	// group data by artist
-    var artist = d3.nest()
-        .key(function(d) { return d.artist; })
-        .rollup(function(v) { return v.length; })
-        .entries(data);
+    // var artist = d3.nest()
+    //     .key(function(d) { return d.artist; })
+    //     .rollup(function(v) { return v.length; })
+    //     .entries(data);
 
-    console.log(artist);
+    // console.log(artist);
+    // console.log(artist.length);
+
+    // group data by genre
+    // var genre = d3.nest()
+    //     .key(function(d) { return d.genre; })
+    //     .rollup(function(v) { return v.length; })
+    //     .entries(data);
+
+    // console.log(genre);
 
 
-	createViz(data);
+	// draw viz for the first time (song view)
+	// updateViz(data);
+
+	groupSong(data);
 
 	// groupGenre();
 
 	// groupArtist();
 
+	function updateViz (data) {
 
-	function createViz (data) {
+		// get user's category selection
+		var browseType = selectBrowseType.property("value");
+
+		console.log(browseType);
+
+	 // group data by artist
+	 //    var artist = d3.nest()
+	 //        .key(function(d) { return d.artist; })
+	 //        .rollup(function(v) { return v.length; })
+	 //        .entries(data);
+
+	 //    console.log(artist);
+	 //    console.log(artist.length);
+
+     // group data by genre
+	 //    var genre = d3.nest()
+	 //        .key(function(d) { return d.genre; })
+	 //        .rollup(function(v) { return v.length; })
+	 //        .entries(data);
+
+	 //    console.log(genre);
+
+
+	    // user toggles
+		if (browseType == "song")
+			groupSong()
+
+		if (browseType == "artist")
+			groupArtist()
+
+		else
+			groupGenre();
+
+	}
+
+	function groupSong () {
 
 		// create force simulation
 		// bubbles move to center of svg without colliding
@@ -135,17 +176,21 @@
 			.enter()
 			.append("circle")
 			.attr("class", "bubble")
+			//.merge(circles)
 			.attr("r", 20)
 			.style("fill", function(d) { return color(d.genre); })
 			.on("mouseover", showTooltip)
 			.on("mousemove", moveTooltip)
 			.on("mouseleave", hideTooltip)
 
+	    circles.exit().remove();
+
+
 		// call force simulation
 		simulation.nodes(data)
 			.on('tick', ticked)
 
-		// ticked function drives movement of circles & label text across svg
+		// ticked function drives movement of circles across svg
 		function ticked() {
 			circles
 				.attr("cx", function(d) {
@@ -160,6 +205,14 @@
 
 
 	function groupGenre () {
+
+		// group data by genre
+	    var genre = d3.nest()
+	        .key(function(d) { return d.genre; })
+	        .rollup(function(v) { return v.length; })
+	        .entries(data);
+
+	    console.log(genre);
 
 		// scale radius by genre size
     	var radius = d3.scaleSqrt()
@@ -176,6 +229,8 @@
 				return radius(d.value) + 5; 
 			}))
 
+		// var genre_songs = data;
+
 
         // append bubbles to svg
         // colored by genre and scaled by song count
@@ -188,15 +243,20 @@
 			.style("fill", function(d) { return color(d.key); })
 			.on("click", function (d) {
 
-              	var genre_songs = data.filter(function(v){
+              	genre_songs = data.filter(function(v){
+
+              		console.log(v.genre);
+
                 	return v.genre == d.data.key;
               	})
 
-              	console.log(genre_songs);
+              	console.log(d.data.key);
 
-              	createViz(genre_songs);
+              	// groupSong(genre_songs);
 
-            });	
+            });
+
+        console.log(circles);
 
 		// append genre labels to svg
 		var text = svg.selectAll('text')
@@ -234,6 +294,16 @@
 
 
 	function groupArtist () {
+
+		// group data by artist
+	    var artist = d3.nest()
+	        .key(function(d) { return d.artist; })
+	        .rollup(function(v) { return v.length; })
+	        .entries(data);
+
+	    console.log(artist);
+	    console.log(artist.length);
+
 
 		// scale radius by artist group size
     	var radius = d3.scaleSqrt()
@@ -295,7 +365,7 @@
 		simulation.nodes(artist)
 			.on('tick', ticked)
 
-		// ticked function drives movement of circles & label text across svg
+		// ticked function drives movement of circles across svg
 		function ticked() {
 			circles
 				.attr("cx", function(d) {
@@ -310,7 +380,4 @@
 
 
 })();
-
-
-// https://www.youtube.com/watch?v=lPr60pexvEM
 
