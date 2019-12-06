@@ -60,7 +60,7 @@
 		.append("g")
 		.attr("transform", "translate(0,0)")
 
-	// initiate ability to toggle between graphs
+	// initiate ability to toggle between song, artist, genre views
 	var selectBrowseType = d3.select("#browse-type").on("change", updateViz);
 
 
@@ -68,6 +68,15 @@
     var color = d3.scaleOrdinal()
         .domain(["Rock", "Pop", "Country", "Indie", "Funk", "Folk", "Rap", "R&B", "Classical", "Jazz"]) 
         .range(["gold", "lightgreen", "red", "orange", "purple", "green", "blue", "pink", "lightblue", "navy"]);
+
+
+	// initialize dynamic data & variables
+	var display_data;
+	var browseType;
+
+
+	// this is for onclick "artist/genre to song" drill-down
+	var song_filter = false;
 
 
 	// draw viz for the first time (song view)
@@ -82,13 +91,15 @@
 
 	function updateViz () {
 
-		// get user's category selection
-		var browseType = selectBrowseType.property("value");
+		// get user's "browse by" selection
+		if (song_filter == false) {
+			browseType = selectBrowseType.property("value")
+		} else {
+			browseType = "song"
+		}
 
 		console.log(browseType);
-
-		// initialize dynamic data & variables
-		var display_data;
+		console.log(display_data);
 
 		var radius = d3.scaleSqrt();
 
@@ -223,7 +234,6 @@
 						}
 					}),
 				update => update
-					.transition()
 					.attr("r", function(d) { return radius(d.value); })
 					.attr("fill", d => {
 
@@ -238,25 +248,41 @@
 						}
 					}),
 				exit => exit.remove()
-				)
+				);
+
+		// hover functionality
+		circles	
 			.on("mouseover", showTooltip)
 			.on("mousemove", moveTooltip)
 			.on("mouseleave", hideTooltip);
 
+		// click functionality
 		circles
 			.on("click", d => {
 
-				var filtered_data;
+				if (browseType == "artist") {
 
-				if (browseType == "artist" || browseType == "genre") {
-					filtered_data = data.filter(v => { 
-						console.log(d.key) 
-	                    return d.key == v.data.key; 
+					display_data = data.filter(v => { 
+	                    return d.key == v.artist; 
 	                })
 
-					console.log(filtered_data)
+					console.log(display_data)
 
-                	updateViz(filtered_data)
+					song_filter = true;
+
+                	updateViz(display_data)
+				}
+				if (browseType == "genre") {
+
+					display_data = data.filter(v => { 
+	                    return d.key == v.genre; 
+	                })
+
+					console.log(display_data)
+
+					song_filter = true;
+
+                	updateViz(display_data)
 				}
 				else { 
 					// browseType == "song"
@@ -264,6 +290,60 @@
 				}
 
             });
+
+
+  //       // user toggle among sorting options within song view
+		// if (browseType == "song") {
+
+		// 	var all_data = data;
+		// 	// console.log(all_data);
+
+		// 	// initiate ability to toggle between sorting categories
+		// 	var selectSortType = d3.select("#sort-type").on("change", updateSort);
+
+		// 	updateSort();
+		// }
+
+		// function updateSort () {
+
+		// 	// get user's "sort by" selection
+		// 	var sortType = selectSortType.property("value");
+
+		// 	//
+
+		// 	if (sortType == "acousticness") {
+
+		// 		console.log(sortType);
+
+
+		// 	}
+
+		// 	else if (sortType == "danceability") {
+
+		// 		console.log(sortType);
+
+		// 	}
+
+		// 	else if (sortType == "liveliness") {
+
+		// 		console.log(sortType);
+
+		// 	}
+
+		// 	else if (sortType == "tempo") {
+
+		// 		console.log(sortType);
+
+		// 	}
+
+		// 	else { //sortType == "default"
+		// 		console.log(sortType);
+
+
+		// 	}
+
+		// }
+
 
 	}
 
