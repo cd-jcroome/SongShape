@@ -3,13 +3,12 @@
 "use strict";
 (() => {
   const chartSpace = d3.select("#scroll");
-
   d3.json("/load_metadata", d => {
-    console.log(d["items"]);
-    allSongs = d["items"];
+    allSongs = d;
     return allSongs;
   })
     .then(allSongs => {
+      allSongs = allSongs;
       drawStuff(allSongs);
     })
     .catch(err => console.error(err));
@@ -30,7 +29,7 @@
       .html(d => {
         return ` <a href="/detail/${d["track"]["id"]}"
           </a>
-          ${d["track"]["name"]}, by ${d["track"]["artists"][0]["name"]}`;
+          ${d["track"]["name"]}, by ${d["artist"][0]["name"]}`;
       });
   }
 })();
