@@ -1,7 +1,8 @@
 (function () {
 
 	// load hardcoded song library (for now)
-    var data = [
+	
+	var data = [
 		{song: "Blackbird", artist: "The Beatles", genre: "Rock", acousticness: 0.88, danceability: 0.05},
 		{song: "Dream On", artist: "Aerosmith", genre: "Rock", acousticness: 0.10, danceability: 0.24},
 		{song: "Brown Eyed Girl", artist: "Van Morrison", genre: "Rock", acousticness: 0.40, danceability: 0.68},
