@@ -1,8 +1,7 @@
 (function () {
 
 	// load hardcoded song library (for now)
-	
-	var data = [
+    var data = [
 		{song: "Blackbird", artist: "The Beatles", genre: "Rock", acousticness: 0.88, danceability: 0.05},
 		{song: "Dream On", artist: "Aerosmith", genre: "Rock", acousticness: 0.10, danceability: 0.24},
 		{song: "Brown Eyed Girl", artist: "Van Morrison", genre: "Rock", acousticness: 0.40, danceability: 0.68},
@@ -61,7 +60,7 @@
 		.append("g")
 		.attr("transform", "translate(0,0)")
 
-	// initiate ability to toggle between song, artist, genre views
+	// initialize ability to toggle between song, artist, genre views
 	var selectBrowseType = d3.select("#browse-type").on("change", updateViz);
 
 
@@ -72,7 +71,7 @@
 
 
 	// initialize dynamic data & variables
-	var display_data;
+	var display_data = data;
 	var browseType;
 
 
@@ -81,16 +80,10 @@
 
 
 	// draw viz for the first time (song view)
-	updateViz();
-
-	// groupSong();
-
-	// groupGenre();
-
-	// groupArtist();
+	updateViz(display_data);
 
 
-	function updateViz () {
+	function updateViz (display_data) {
 
 		// get user's "browse by" selection
 		if (song_filter == false) {
@@ -146,7 +139,7 @@
 		    var song = d3.nest()
 		        .key(function(d) { return d.song; })
 		        .rollup(function(v) { return v.length; })
-		        .entries(data);
+		        .entries(display_data);
 
 			display_data = song;
 
@@ -159,11 +152,13 @@
 
 		else if (browseType == "artist") {
 
+			display_data = data;
+
 			// group data by artist
 		    var artist = d3.nest()
 		        .key(function(d) { return d.artist; })
 		        .rollup(function(v) { return v.length; })
-		        .entries(data);
+		        .entries(display_data);
 
 		    console.log(artist);
 		    console.log(artist.length);
@@ -177,13 +172,15 @@
 
 		}
 
-		else {
-		
+		else { // browseType == "genre"
+
+			display_data = data;
+
 			// group data by genre
 		    var genre = d3.nest()
 		        .key(function(d) { return d.genre; })
 		        .rollup(function(v) { return v.length; })
-		        .entries(data);
+		        .entries(display_data);
 
 		    console.log(genre);
 		    console.log(genre.length);
@@ -222,32 +219,9 @@
 					.append("circle")
 					.attr("class", "bubble")
 					.attr("r", function(d) { return radius(d.value); })
-					.attr("fill", d => {
-
-						if (browseType == "song") {
-							return "purple"
-						}
-						else if (browseType == "artist") {
-							return "gold"
-						}
-						else {
-							return "lightblue"
-						}
-					}),
+					.attr("fill", "#374785"),
 				update => update
-					.attr("r", function(d) { return radius(d.value); })
-					.attr("fill", d => {
-
-						if (browseType == "song") {
-							return "purple"
-						}
-						else if (browseType == "artist") {
-							return "gold"
-						}
-						else {
-							return "lightblue"
-						}
-					}),
+					.attr("r", function(d) { return radius(d.value); }),
 				exit => exit.remove()
 				);
 
@@ -349,6 +323,11 @@
 	}
 
 
+	// groupSong();
+
+	// groupGenre();
+
+	// groupArtist();
 
 
 

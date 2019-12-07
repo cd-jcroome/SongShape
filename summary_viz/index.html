@@ -1,10 +1,10 @@
 <html>
   <head> 
-  	<meta charset="utf-8">
-  	<style>
-  	* {
-  		font-family: "Avenir";
-  	}
+    <meta charset="utf-8">
+    <style>
+    * {
+      font-family: "Avenir";
+    }
     h1 {
       font-size: 1.5em;
     }
@@ -16,9 +16,9 @@
      font-size: 0.7em;
      text-transform: uppercase;
      font-weight: bold;
-    }    	
+    }     
     svg {
-  		background: white;
+      background: white;
     }
     .bubble {
       stroke-width: 3px;
@@ -27,7 +27,7 @@
     .bubble:hover {
       stroke: black;
     }
-  	</style>
+    </style>
   </head>
   <body>
 
@@ -35,7 +35,7 @@
 
     <h1>Explore Song Library</h1>
 
-<!--     <p>Browse by &nbsp;
+    <!-- <p>Browse by &nbsp;
       <button value="song">Song</button>
       <button value="artist">Artist</button>
       <button value="genre">Genre</button>
@@ -52,11 +52,17 @@
       <div class="form-group">
         <label for="browseType">Browse by</label>&nbsp;
         <select class="form-control" id="browse-type">
-          <option value="song">Song</option>
+          <option value="song">Song</option> 
           <option value="artist">Artist</option>
           <option value="genre">Genre</option>
         </select>
       </div>
+    </form>
+
+
+    <!-- Button to reset viz -->
+    <form action="file:///Users/rlantner/Documents/hes_class_fall_2019/final_project/SongShape/summary_viz/index.html" method="get">
+      <button value="reset">Reset View</button>
     </form>
 
 
@@ -79,8 +85,8 @@
 
   </div>    
 
-	<script src="https://d3js.org/d3.v5.min.js"></script>  	
-	<script src="bubbles.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script>   
+  <script src="bubbles.js"></script>
 
   </body>
 </html>
