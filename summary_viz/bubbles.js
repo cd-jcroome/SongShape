@@ -74,7 +74,6 @@
 	var display_data = data;
 	var browseType;
 
-
 	// this is for onclick "artist/genre to song" drill-down
 	var song_filter = false;
 
@@ -146,7 +145,7 @@
 			// scale radius (constant for song view)
 	    	radius
 	        	.domain([1,2])
-	        	.range([20,20]);
+	        	.range([20,20]);		
 
 		}
 
@@ -231,6 +230,57 @@
 			.on("mousemove", moveTooltip)
 			.on("mouseleave", hideTooltip);
 
+		// sort by song views
+		if (browseType == "song") {
+
+			// initialize ability to toggle between sorting views
+			var selectSortType = d3.select("#sort-type")
+				.on("change", d => {
+
+					var sortType = selectSortType.property("value");
+					console.log(sortType);
+
+					circles
+						.join(
+							enter => enter
+								.append("circle"),
+							update => update
+								.attr("fill", d => {
+
+									if (sortType == "acousticness") { 
+										data.filter(v => {
+											if (v.acousticness > 0.75) {
+												console.log(v.song)
+											}												
+										}) 
+										return "#E98074" 
+									}
+
+									
+									if (sortType == "danceability") {
+										return "#AC3B43"
+
+									}
+									if (sortType == "liveliness") {
+										return "#5AB9EA"
+
+									}									
+									if (sortType == "tempo") {
+										return "#AC3B7D" 
+
+									}									
+									else { // sortType == "default"
+										return "#374785" 
+
+									}
+								}),
+							exit => exit.remove()
+							);
+
+				})
+
+		}
+
 		// click functionality
 		circles
 			.on("click", d => {
@@ -265,59 +315,6 @@
 				}
 
             });
-
-
-  //       // user toggle among sorting options within song view
-		// if (browseType == "song") {
-
-		// 	var all_data = data;
-		// 	// console.log(all_data);
-
-		// 	// initiate ability to toggle between sorting categories
-		// 	var selectSortType = d3.select("#sort-type").on("change", updateSort);
-
-		// 	updateSort();
-		// }
-
-		// function updateSort () {
-
-		// 	// get user's "sort by" selection
-		// 	var sortType = selectSortType.property("value");
-
-		// 	//
-
-		// 	if (sortType == "acousticness") {
-
-		// 		console.log(sortType);
-
-
-		// 	}
-
-		// 	else if (sortType == "danceability") {
-
-		// 		console.log(sortType);
-
-		// 	}
-
-		// 	else if (sortType == "liveliness") {
-
-		// 		console.log(sortType);
-
-		// 	}
-
-		// 	else if (sortType == "tempo") {
-
-		// 		console.log(sortType);
-
-		// 	}
-
-		// 	else { //sortType == "default"
-		// 		console.log(sortType);
-
-
-		// 	}
-
-		// }
 
 
 	}
