@@ -73,7 +73,7 @@
       .attr("data-step", "d")
       .attr("height", `${stepHeight}`)
       .attr("width", `${stepWidth}`)
-      // add browse-by filter
+      // add browse-by selctor
       .append("form")
       .attr("class", "form-inline")
       .append("div")
@@ -85,20 +85,34 @@
       .attr("class", "form-control")
       .attr("id", "browse-type")
       .style("transform", "translate(0,50px)");
-    // add options to filter
-    var selector = d3.select("#browse-type");
-    selector
+    // add options to browse-by
+    var browseSelector = d3.select("#browse-type");
+    browseSelector
       .append("option")
       .attr("value", "song")
       .text("Song");
-    selector
+    browseSelector
       .append("option")
       .attr("value", "artist")
       .text("Artist");
-    selector
+    browseSelector
       .append("option")
       .attr("value", "genre")
       .text("Genre");
+
+    // add sort-by selector
+    chartSpace
+      .append("form")
+      .attr("class", "form-inline")
+      .append("div")
+      .attr("class", "form-group")
+      .append("label")
+      .attr("for", "sortType")
+      .text("Sort By")
+      .append("select")
+      .attr("class", "form-control")
+      .attr("id", "sort-type")
+      .style("transform", "translate(0,50px)");
 
     chartSpace
       .append("a")
