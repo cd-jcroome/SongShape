@@ -1,6 +1,7 @@
 import librosa
 import numpy as np
 import pandas as pd
+import os.path
 
 #------------------------------------------------------------
 #------------------------------------------------------------
@@ -30,10 +31,17 @@ class AudioAnalyzer():
         self.metaDataPath = metaDataPath
         self.metaData = None
 
+        self.mediaName = None
+
     #------------------------------------------------------------
     #------------------------------------------------------------
     def Analyze(self, mediaPath):
         self.mediaPath = mediaPath
+
+        temp = os.path.basename(self.mediaPath)
+        temp = os.path.splitext(temp) # return (root, ext)
+        self.mediaName = temp[0]
+
         self.allSignal.signalData, self.samplingRate = librosa.load(self.mediaPath)
         print("--> max signal = {0:f}".format(np.amax(self.allSignal.signalData)))
         print("    sampling rate = {0:f}".format(self.samplingRate))
@@ -53,9 +61,9 @@ class AudioAnalyzer():
 
         self.metaData = pd.read_csv("../data/metadata.csv")
 
-        self.GenerateDf(self.allSignal, "all")
-        self.GenerateDf(self.harmonicSignal, "harmonic")
-        self.GenerateDf(self.percussiveSignal, "percussive")
+        self.GenerateDf(self.allSignal, self.mediaName + "_all")
+        self.GenerateDf(self.harmonicSignal, self.mediaName + "_harmonic")
+        self.GenerateDf(self.percussiveSignal, self.mediaName + "_percussive")
 
     #------------------------------------------------------------
     #------------------------------------------------------------
@@ -98,4 +106,7 @@ if __name__ == "__main__":
      aa = AudioAnalyzer(metaDataPath)
 
      mediaPath = "../data/TheCatConcerto.mp4"
+     # mediaPath = "../data/TheCatConcertoDebug.mp3"
      aa.Analyze(mediaPath)
+
+

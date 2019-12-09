@@ -1,2 +1,3 @@
-python -m http.server 8000
+python py/CustomWebserver.py
+pause
 REM localhost:8000
