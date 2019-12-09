@@ -25,7 +25,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 # Spotify params
-if socket.gethostname() in ["iMac", "APJ2HV2R68BAFD"]:
+if socket.gethostname() in ["iMac", "APJ2HV2R68BAFD", "LAPTOP-RP2K2BF3"]:
     from local_spotify_params import key, secret_key
     spotify_key = key
     spotify_secret_key = secret_key
