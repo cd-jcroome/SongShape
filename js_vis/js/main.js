@@ -39,16 +39,14 @@ window.addEventListener("load", (event) => {
 
         // once the large csv file is loaded into memory
         temp.then((csvRawData) => {
-            myBtn.textContent = "loaded"
-            mediaC.mediaEle.play();
+            myBtn.textContent = "loaded";
+
+            prep.preprocess(csvRawData, ac.plotRefreshRate);
 
             musicPlot.initializePlot(csvRawData);
-
             ac.musicLengthText.textContent = musicPlot.totalMusicTimeInSec.toFixed(1);
 
-            prep.preprocess(csvRawData,
-                            ac.plotRefreshRate,
-                            musicPlot.totalMusicTimeInSec);
+            mediaC.mediaEle.play();
 
             function startAnalysis(timeStamp) {
                 ac.update(timeStamp);
