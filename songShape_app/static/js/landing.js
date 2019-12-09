@@ -8,6 +8,7 @@
 
   let allSongs = [];
   let response = [];
+  let header = d3.select(".header").select("h1");
   let windowHeight = [];
   let windowWidth = [];
   let stepHeight = [];
@@ -34,60 +35,103 @@
 
   function buildSections() {
     chartSpace
+      .append("a")
+      .attr("name", "welcome")
       .append("div")
       .attr("id", "welcomeGroup")
       .attr("class", "step")
       .attr("data-step", "a")
-      .style("height", `${stepHeight}px`)
-      .style("width", `${stepWidth}px`);
+      .attr("height", `${stepHeight}`)
+      .attr("width", `${stepWidth}`);
 
     chartSpace
+      .append("a")
+      .attr("name", "methodology")
       .append("div")
       .attr("id", "mthdGroup")
       .attr("class", "step")
       .attr("data-step", "b")
-      .style("height", `${stepHeight}px`)
-      .style("width", `${stepWidth}px`);
+      .attr("height", `${stepHeight}`)
+      .attr("width", `${stepWidth}`);
 
     chartSpace
+      .append("a")
+      .attr("name", "legend")
       .append("div")
       .attr("id", "legendGroup")
       .attr("class", "step")
       .attr("data-step", "c")
-      .style("height", `${stepHeight}px`)
-      .style("width", `${stepWidth}px`);
+      .attr("height", `${stepHeight}`)
+      .attr("width", `${stepWidth}`);
 
     chartSpace
+      .append("a")
+      .attr("name", "universe")
       .append("div")
       .attr("id", "universeGroup")
       .attr("class", "step")
       .attr("data-step", "d")
-      .style("height", `${stepHeight}px`)
-      .style("width", `${stepWidth}px`);
+      .attr("height", `${stepHeight}`)
+      .attr("width", `${stepWidth}`)
+      // add browse-by filter
+      .append("form")
+      .attr("class", "form-inline")
+      .append("div")
+      .attr("class", "form-group")
+      .append("label")
+      .attr("for", "browseType")
+      .text("Browse By")
+      .append("select")
+      .attr("class", "form-control")
+      .attr("id", "browse-type")
+      .style("transform", "translate(0,50px)");
+    // add options to filter
+    var selector = d3.select("#browse-type");
+    selector
+      .append("option")
+      .attr("value", "song")
+      .text("Song");
+    selector
+      .append("option")
+      .attr("value", "artist")
+      .text("Artist");
+    selector
+      .append("option")
+      .attr("value", "genre")
+      .text("Genre");
 
     chartSpace
+      .append("a")
+      .attr("name", "about")
       .append("div")
       .attr("id", "aboutGroup")
       .attr("class", "step")
       .attr("data-step", "d")
-      .style("height", `${stepHeight}px`)
-      .style("width", `${stepWidth}px`);
+      .attr("height", `${stepHeight}`)
+      .attr("width", `${stepWidth}`);
+  }
+
+  function activelink(linkName) {
+    d3.selectAll(".active").classed("active", false);
+    var linkName = d3.selectAll(`#${linkName}`);
+    linkName.classed("active", !linkName.classed("active"));
   }
 
   function welcome() {
     chartSpace.selectAll("#mthdText").remove();
     chartSpace.selectAll("#welcomeText").remove();
+
     let welcomeText = d3
       .selectAll("#welcomeGroup")
       .append("g")
-      .attr("id", "welcomeText")
-      .style("transform", `translate(0,${windowHeight / 2}px)`);
+      .attr("id", "welcomeText");
 
     welcomeText
-      .append("h1")
+      .append("h2")
       .text("What does a song look like?")
       .attr("text-align", "left")
       .style("opacity", "0")
+      .style("transform", `translate(0px,${stepHeight / 2}px)`)
       .transition()
       .duration(headerDuration)
       .style("opacity", "1");
@@ -95,10 +139,11 @@
     welcomeText
       .append("p")
       .text(
-        "That's the question we set out to answer with this project. Through many different trials and iterations, this site is our attempt to share what we found with you. \n\nScroll down to begin."
+        "That's the riddle we set out to answer with this project. Through many different trials and iterations, this site is our attempt to share what we found with you. \n\nScroll down to begin."
       )
       .attr("text-align", "left")
       .style("opacity", "0")
+      .style("transform", `translate(0px,${stepHeight / 2}px)`)
       .transition()
       .duration(textDuration)
       .style("opacity", "1");
@@ -108,24 +153,26 @@
     chartSpace.selectAll("#welcomeText").remove();
     chartSpace.selectAll("#legendText").remove();
     chartSpace.selectAll("#mthdText").remove();
+
     let mthdText = d3
       .selectAll("#mthdGroup")
       .append("g")
-      .attr("id", "mthdText")
-      .style("transform", `translate(0,${windowHeight / 2}px)`);
+      .attr("id", "mthdText");
 
     mthdText
-      .append("h1")
+      .append("h2")
       .text("Methodology")
       .style("opacity", "0")
+      .style("transform", `translate(0px,${stepHeight / 2}px)`)
       .transition()
       .duration(headerDuration)
-      .style("opacity", "1");
+      .text("Methodology");
 
     mthdText
       .append("p")
       .text("Here's where we'll discuss our methodology and whatnot.")
       .style("opacity", "0")
+      .style("transform", `translate(0px,${stepHeight / 2}px)`)
       .transition()
       .duration(textDuration)
       .style("opacity", "1");
@@ -133,42 +180,45 @@
 
   function legend() {
     chartSpace.selectAll("#mthdText").remove();
-    chartSpace.selectAll("#universeText").remove();
     chartSpace.selectAll("#legendText").remove();
+
     let legendText = d3
       .selectAll("#legendGroup")
       .append("g")
-      .attr("id", "legendText")
-      .style("transform", `translate(0,${windowHeight / 2}px)`);
+      .attr("id", "legendText");
 
     legendText
-      .append("h1")
+      .append("h2")
       .text("Legend")
       .style("opacity", "0")
+      .style("transform", `translate(0px,${stepHeight / 2}px)`)
       .transition()
       .duration(headerDuration)
-      .style("opacity", "1");
+      .text("Legend");
 
     legendText
       .append("p")
       .text("Here's where we'll explain how to understand the viz.")
       .style("opacity", "0")
+      .style("transform", `translate(0px,${stepHeight / 2}px)`)
       .transition()
       .duration(textDuration)
       .style("opacity", "1");
   }
 
   function about() {
+    chartSpace.selectAll("#aboutText").remove();
+
     let aboutText = d3
       .selectAll("#aboutGroup")
       .append("g")
-      .attr("id", "aboutText")
-      .style("transform", `translate(0,${windowHeight / 2}px)`);
+      .attr("id", "aboutText");
 
     aboutText
-      .append("h1")
+      .append("h2")
       .text("About our Team")
       .style("opacity", "0")
+      .style("transform", `translate(0px,${stepHeight / 2}px)`)
       .transition()
       .duration(headerDuration)
       .style("opacity", "1");
@@ -177,6 +227,7 @@
       .append("p")
       .text("Here's where we'll brag on ourselves a little bit (or a lot!).")
       .style("opacity", "0")
+      .style("transform", `translate(0px,${stepHeight / 2}px)`)
       .transition()
       .duration(textDuration)
       .style("opacity", "1");
@@ -186,23 +237,22 @@
     // response = { element, direction, index }
     switch (response.index) {
       case 0: // welcome
-        console.log("welcome");
+        activelink("homelnk");
         welcome();
-        break; // methodology
-      case 1:
-        console.log("methodology");
+        break;
+      case 1: // methodology
+        activelink("mthdlnk");
         methodology();
-        break; // legend
-      case 2:
-        console.log("legend");
+        break;
+      case 2: // legend
+        activelink("lgndlnk");
         legend();
-        break; // universe viz
-      case 3:
-        console.log("universe");
-
+        break;
+      case 3: // universe viz
+        activelink("xplrlnk");
         break;
       case 4:
-        console.log("about");
+        activelink("abtlnk");
         about();
         break;
     }

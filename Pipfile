@@ -21,6 +21,7 @@ flask-sqlalchemy = "*"
 psycopg2 = "*"
 flask-heroku = "*"
 requests-oauthlib = "*"
+pydub = "*"
 
 [requires]
 python_version = "3.7"
