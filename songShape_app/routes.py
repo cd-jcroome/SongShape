@@ -93,8 +93,16 @@ def callback():
 # detail route
 @app.route('/detail/<spotify_id>')
 def detail(spotify_id):
+    access_token = session['oauth_token']
+    authorization_header = {"Authorization": "Bearer {}".format(access_token)}
     spotify_id = spotify_id
-    return render_template('detail.html', title=spotify_id)
+
+
+    track_info = requests.get(spotify_tracks_url+spotify_id, headers=authorization_header).json()
+
+    # preview_url = str(track_info['preview_url']).split("?")[0]+".mp3"
+
+    return render_template('detail.html', title=spotify_id, track_info=track_info)
 
 # load_metadata route (for universe vis)
 @app.route('/load_metadata', methods=['GET', 'POST'])
