@@ -449,7 +449,7 @@ export function MusicPlot()
                         return "visible";
                     }
                 })
-                .attr("opacity", "0.2");
+                .attr("opacity", "0.3");
 
         this.myText.attr("font-size", (d) => {
                         if(d["noteUpdated"])
