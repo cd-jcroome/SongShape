@@ -107,6 +107,7 @@ if __name__ == "__main__":
 
      mediaPath = "../data/TheCatConcerto.mp4"
      # mediaPath = "../data/TheCatConcertoDebug.mp3"
+     RobertoDiMarino_CelticSuite.mp3
      aa.Analyze(mediaPath)
 
 

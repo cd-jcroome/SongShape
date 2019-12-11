@@ -1,5 +1,5 @@
 <html>
-  <head> 
+  <head>
     <meta charset="utf-8">
     <style>
     * {
@@ -16,7 +16,7 @@
      font-size: 0.7em;
      text-transform: uppercase;
      font-weight: bold;
-    }     
+    }
     svg {
       background: white;
     }
@@ -52,7 +52,7 @@
       <div class="form-group">
         <label for="browseType">Browse by</label>&nbsp;
         <select class="form-control" id="browse-type">
-          <option value="song">Song</option> 
+          <option value="song">Song</option>
           <option value="artist">Artist</option>
           <option value="genre">Genre</option>
         </select>
@@ -61,8 +61,8 @@
 
 
     <!-- Button to reset viz -->
-    <form action="file:///Users/rlantner/Documents/hes_class_fall_2019/final_project/SongShape/summary_viz/index.html" method="get">
-      <button value="reset">Reset View</button>
+    <form method="get">
+      <button value="reset" id="reloadButton">Reset View</button>
     </form>
 
 
@@ -79,13 +79,13 @@
         </select>
       </div>
     </form>
-    
+
     <!-- Parent container for the visualization -->
     <div id="chart"></div>
 
-  </div>    
+  </div>
 
-  <script src="https://d3js.org/d3.v5.min.js"></script>   
+  <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="bubbles.js"></script>
 
   </body>
