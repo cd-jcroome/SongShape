@@ -11,8 +11,10 @@ window.addEventListener("load", (event) => {
     function BubbleManager()
     {
         // define svg width and height
-        this.width = 500;
-        this.height = 500;
+        this.width = 600;
+        this.height = 600;
+
+        this.constantRadius = 20;
 
         this.radius = null;
 
@@ -47,10 +49,8 @@ window.addEventListener("load", (event) => {
 
         this.tooltip = null;
 
-        this.radiusKey = null;
-
         // create tooltip functions
-        this.showTooltip = (d) => {
+        this.showTooltip = (d, i) => {
             this.tooltip
               .style("opacity", 1)
               .html(d.key);
@@ -176,8 +176,6 @@ window.addEventListener("load", (event) => {
         //------------------------------------------------------------
         //------------------------------------------------------------
         this.updateViz = () => {
-            this.radius = d3.scaleSqrt();
-
             // get user's "browse by" selection
             if (this.song_filter === false) {
                 this.browseType = this.selectBrowseType.property("value");
@@ -191,6 +189,18 @@ window.addEventListener("load", (event) => {
             // "sort by" is non-default, "browse by" selection is ignored!
             this.sortType = this.selectSortType.property("value");
 
+            this.updateDisplayDataAndRadius();
+
+            this.updateTooltips();
+
+            this.updateBubbles();
+
+            this.updateForceSimulation();
+        };
+
+        //------------------------------------------------------------
+        //------------------------------------------------------------
+        this.updateDisplayDataAndRadius = () => {
             // honor "browse by" selection
             if(this.sortType == "default")
             {
@@ -203,9 +213,9 @@ window.addEventListener("load", (event) => {
                     // console.log(this.display_data);
 
                     // scale radius (constant for song view)
-                    this.radius
-                        .domain([1,2])
-                        .range([20,20]);
+                    this.radius = d3.scaleSqrt()
+                        .domain(d3.extent(this.display_data, (d) => { return d["value"]; }))
+                        .range([this.constantRadius, this.constantRadius]);
 
                 }
 
@@ -225,8 +235,8 @@ window.addEventListener("load", (event) => {
                     this.display_data = artist;
 
                     // scale radius by artist group size
-                    this.radius
-                        .domain(d3.extent(artist, (d) => { return d.value; })).nice()
+                    this.radius = d3.scaleSqrt()
+                        .domain(d3.extent(artist, (d) => { return d["value"]; })).nice()
                         .range([20, 100]);
 
                 }
@@ -247,7 +257,7 @@ window.addEventListener("load", (event) => {
                     this.display_data = genre;
 
                     // scale radius by genre group size
-                    this.radius
+                    this.radius = d3.scaleSqrt()
                         .domain(d3.extent(genre, (d) => { return d.value; })).nice()
                         .range([20, 100]);
 
@@ -259,11 +269,17 @@ window.addEventListener("load", (event) => {
                 this.display_data = this.deepCopyRawData();
 
                 // scale radius by d[this.sortType] magnitude
-                this.radius
-                    .domain(d3.extent(this.display_data, (d) => { return d[this.sortType]; }))
-                    .range([5, 40]);
+                this.radius = d3.scaleLinear()
+                    .domain(d3.extent(this.display_data, (d) => {
+                        return d[this.sortType];
+                    }))
+                    .range([this.constantRadius, this.constantRadius]);
             }
+        };
 
+        //------------------------------------------------------------
+        //------------------------------------------------------------
+        this.updateTooltips = () => {
             // remove all existing tooltips
             d3.selectAll(".tooltip").remove();
 
@@ -277,7 +293,11 @@ window.addEventListener("load", (event) => {
                 .style("border-radius", "5px")
                 .style("padding", "10px")
                 .style("color", "white");
+        };
 
+        //------------------------------------------------------------
+        //------------------------------------------------------------
+        this.updateBubbles = () => {
             // remove all existing bubbles
             this.svg.selectAll(".bubble").remove();
 
@@ -372,29 +392,107 @@ window.addEventListener("load", (event) => {
                     }
 
                 });
-
-
-            // initialize force simulation
-            this.simulation = d3.forceSimulation()
-                .force("x", d3.forceX(this.width / 2).strength(0.05))
-                .force("y", d3.forceY(this.height / 2).strength(0.05))
-                .force("collide", d3.forceCollide((d) => {
-                    return this.radius(d.value) + 5;
-                }));
-
-            // call force simulation
-            this.simulation.nodes(this.display_data)
-                .on('tick', (d) => {
-                    this.circles
-                    .attr("cx", (d) => {
-                        return d.x
-                    })
-                    .attr("cy", (d) => {
-                        return d.y
-                    });
-                });
         };
 
+        //------------------------------------------------------------
+        //------------------------------------------------------------
+        this.updateForceSimulation = () => {
+            // honor "browse by" selection
+            if(this.sortType == "default")
+            {
+                // each time control flows hits this point
+                // a new force simulation is created
+                // and the old one gets garbage collected
+                this.simulation = d3.forceSimulation()
+                    .force("x", d3.forceX(this.width / 2).strength(0.05))
+                    .force("y", d3.forceY(this.height / 2).strength(0.05))
+                    .force("collide", d3.forceCollide((d) => {
+                        return this.radius(d.value) + 5;
+                    }));
+
+                // call force simulation on each tick
+                this.simulation.nodes(this.display_data)
+                    .on('tick', () => {
+                        this.circles
+                        .attr("cx", (d) => {
+                            return d.x;
+                        })
+                        .attr("cy", (d) => {
+                            return d.y;
+                        });
+                    });
+            }
+            // ignore "browse by" selection
+            else
+            {
+                // manually stop simulation if any
+                if(this.simulation !== null)
+                {
+                    this.simulation.stop();
+                }
+
+                let xScaleSortType = d3.scaleLinear()
+                               .domain(d3.extent(this.display_data, (d) => {
+                                    return d["value"];
+                                }))
+                               .range([this.constantRadius, this.width - this.constantRadius]);
+
+                //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                // bubble stacking with overlapping avoidance
+                //
+                // this algorithm ensures that for each bubble, x coordinate is EXACT,
+                // whereas y coordinate is adjusted such that bubbles do not overlap
+                // with one another.
+                //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+                let yCoordList = new Array(this.circles.size()).fill(0.0);
+
+                const yBaseline = this.height * 0.8;
+
+                const minCircleDistance = 0.0; // set this value to 0 to allow bubbles to contact one another
+                                               // a non-zero value keeps bubbles away from one another
+
+                for(let i = 0; i < yCoordList.length; ++i)
+                {
+                    let xCoord = xScaleSortType(this.display_data[i]["value"]);
+                    let yCoord = yBaseline;
+
+                    // first element (i == 0) does not need to worry about overlap
+                    if(i > 0)
+                    {
+                        // iterate bubbles preceding the current bubble
+                        for(let bubbleIdx = 0; bubbleIdx < i; ++bubbleIdx)
+                        {
+                            let c1X = xScaleSortType(this.display_data[bubbleIdx]["value"]);
+                            let c1Y = yCoordList[bubbleIdx];
+
+                            yCoord = adjustCircleYCoordIfNecessary(
+                                c1X, c1Y, this.constantRadius, // circle 1 info
+                                xCoord, yCoord, this.constantRadius, // circle 2 info
+                                minCircleDistance);
+
+                            if(i == 3)
+                            {
+                                console.log(`${c1X} ${c1Y} ${xCoord} ${yCoord} ${this.constantRadius}`);
+                            }
+                        }
+                    }
+
+                    yCoordList[i] = yCoord;
+                }
+
+                this.circles
+                    .attr("cx", (d) => {
+                        return xScaleSortType(d["value"]);
+                    })
+                    .attr("cy", (d, i) => {
+                        return yCoordList[i];
+                    });
+            }
+        };
+
+        //------------------------------------------------------------
+        //------------------------------------------------------------
         this.deepCopyRawData = () => {
             // javascript's Array.sort() method performs sorting
             // "in place", which is too intrusive. to avoid
@@ -451,6 +549,59 @@ window.addEventListener("load", (event) => {
         };
     }
 
+    //------------------------------------------------------------
+    //------------------------------------------------------------
+    function adjustCircleYCoordIfNecessary(
+        x1, y1, r1, // circle 1 info
+        x2, y2, r2, // circle 2 info
+        minCircleDistance = 0)
+    {
+        let tempX = x1 - x2;
+        tempX = tempX * tempX;
+
+        let tempY = y1 - y2;
+        tempY = tempY * tempY;
+
+        let centerDistanceSqr = tempX + tempY;
+
+        let minDistanceSqr = r1 + r2 + minCircleDistance;
+        minDistanceSqr = minDistanceSqr * minDistanceSqr;
+
+        if(centerDistanceSqr >= minDistanceSqr)
+        {
+            // no adjustment is needed
+            // return unchanged y2
+            return y2;
+        }
+        else
+        {
+            // now that circle 1 and circle 2 overlap,
+            // adjust circle 2's y coordinate to prevent overlap
+            // always move circle 2 upward
+
+            // special case: x1 == x2
+            if(Math.abs(tempX) < 1e-6)
+            {
+                let newY = y1 - r1 - r2 - minCircleDistance;
+            }
+
+            // general case where x1 != x2
+            let newY = minDistanceSqr - tempX;
+            newY = y1 - Math.sqrt(newY);
+
+            return newY;
+        }
+    }
+
+    //------------------------------------------------------------
+
+    //------------------------------------------------------------
+    function budgeCircleYCoord(x1, y1, r1,
+                               x2, y2, r2,
+                               minCircleDistance)
+    {
+
+    }
 }); // end click event listener
 
 })(); // end IIFE scope
