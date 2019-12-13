@@ -440,7 +440,7 @@
               })
               .strength(0.05)
           )
-          .force("y", d3.forceY(this.height / 2).strength(0.05))
+          .force("y", d3.forceY(this.height * 0.3).strength(0.05))
           .force(
             "collide",
             d3.forceCollide(d => {
