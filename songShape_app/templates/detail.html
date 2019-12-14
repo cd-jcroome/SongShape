@@ -1,38 +1,38 @@
 {% extends "layout.html" %} {% block content %} var preview_url =
-<script type="text/javascript">
-  var preview_url = {{ preview_url|tojson }}
-  console.log(preview_url)
-</script>
-<script type="module" src="../static/js/detail.js"></script>
-<link rel="stylesheet" type="text/css" href="../static/css/detail.css" />
+
+<head>  
+    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />    
+    <link rel="stylesheet" type="text/css" href="../static/css/detail.css" />
+    <link href="https://fonts.googleapis.com/css?family=Pacifico|Roboto&display=swap" rel="stylesheet">
+</head>
+
 <header class="masthead mb-auto">
   <div class="inner">
     <h1 class="masthead-brand">AudioForma</h1>
     <nav class="nav nav-masthead justify-content-center">
-      <form action="/" method="GET">
-        <button type="submit">Home</button>
-      </form>
+      <a class="nav-link active" id="homelnk" href="#welcome">Back To Home</a>
     </nav>
   </div>
 </header>
+
+<body>
 <div class="flex-container">
-  <div>
-    <audio id="my-media">
+  <div id="controller-div">
+<!--     <audio id="my-media">
       <source type="audio/mp3" />
-    </audio>
-    <button type="button" id="start" class="bubu-button">start</button>
+    </audio> -->
+    <br>
+    <br>
+    <button type="button" id="start" class="bubu-button">Start</button>
     <table id="music-info">
       <tr>
-        <td>
-          <label>frame rate per second (FPS)</label>
-        </td>
         <td>
           <p id="fps"></p>
         </td>
       </tr>
       <tr>
         <td>
-          <label>time elapsed [second]</label>
+          <label>Time Elapsed [s]</label>
         </td>
         <td>
           <p id="time-elapsed"></p>
@@ -40,7 +40,7 @@
       </tr>
       <tr>
         <td>
-          <label>music length [second]</label>
+          <label>Music Length [s]</label>
         </td>
         <td>
           <p id="music-length"></p>
@@ -50,7 +50,16 @@
   </div>
   <div>
     <div id="plot-div"></div>
-    <div id="legend-div"></div>
+    <!-- <div id="legend-div"></div> -->
   </div>
 </div>
+</body>
+
+<footer>
+    <script type="text/javascript">
+      var preview_url = {{ preview_url|tojson }}
+      console.log(preview_url)
+    </script>
+    <script type="module" src="../static/js/detail.js"></script>
+</footer>
 {% endblock %}

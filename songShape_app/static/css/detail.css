@@ -1,64 +1,80 @@
 /* selector reference: https://www.w3schools.com/cssref/css_selectors.asp */
 
-body {
-  font-size: 1.5vw;
-  font-family: "Pacifico", cursive;
-  background: #000000;
+a {
+  color: #eee;
 }
 
-#my-media {
+
+body {
+  height: 100%;
+  background-color: #222;
+  color: #eee;
+}
+
+/* #my-media {
   width: 100%;
   height: auto;
   margin-left: 30px;
-}
+} */
 
 .bubu-button {
-  background-color: #edc7b7;
+  background-color: #1DB954;
   border: none;
-  color: #ac3b61;
+  color: #eee;
   font-family: "Pacifico", cursive;
-  padding: 10px 30px;
+  padding: 7px 21px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 2vw;
+  font-size: 1.5vw;
+}
+
+.masthead {
+  margin-bottom: 2rem;
+  position: fixed;
+  width: 95vw;
+  font-family: "Pacifico";
+  background-color: #222;
+  z-index: 100000;
 }
 
 .bubu-button:disabled {
   background-color: #ff8888;
 }
 
-table {
-  width: 20%;
-  border-collapse: collapse;
-}
-
-/* tr:nth-child(odd) {
-  background-color: #BAB2B5;
-}
-*/
 .flex-container {
   display: flex;
   text-align: center;
   margin-top: 10vh;
 }
 
-.flex-container div {
-  flex-basis: 20%;
-}
 
 div * {
-  margin: 10px;
+  margin: 1vh;
 }
 
 #plot-div {
-  width: 100%;
-  padding-left: 70px;
+  width: 80%;
 }
 
-#legend-div {
-  width: 100%;
+#controller-div {
+  width: 20%;
   height: 100%;
+}
+
+table {
+  border-collapse: collapse;
+  font-family: "Pacifico", cursive;
+}
+
+
+@media (min-width: 48em) {
+  .masthead-brand {
+    float: left;
+  }
+  .nav-masthead {
+    float: right;
+  }
 }
 
 .myXAxis line {
