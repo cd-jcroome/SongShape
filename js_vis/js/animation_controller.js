@@ -2,7 +2,6 @@
 //------------------------------------------------------------
 export function AnimationController()
 {
-    this.fpsText              = document.querySelector("#fps");
     this.timeElapsedText      = document.querySelector("#time-elapsed");
     this.systemSampleRateText = document.querySelector("#system-sample-rate");
     this.timeStart              = null;
@@ -24,7 +23,6 @@ export function AnimationController()
         this.timeElapsedText.textContent = (this.timeElapsedInMillisec / 1000.0).toFixed(1);
 
         this.timeIntervalInMillisec = timeStamp - this.timeOld;
-        this.fpsText.textContent = (1.0 / this.timeIntervalInMillisec * 1000.0).toFixed(0);
         this.timeOld = timeStamp;
 
         this.plotRefreshAccumulatedTimeInMillisec += this.timeIntervalInMillisec;
