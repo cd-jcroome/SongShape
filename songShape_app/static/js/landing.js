@@ -89,16 +89,22 @@
       .text(
         "We start off by connecting with Spotify to query a user's library. After making a few API calls, we render the initial song metadata results using d3js."
       );
-    mthdText
+	mthdText
       .append("p")
       .text(
-        "In addition to the metadata, Spotify provides access to 30s samples of many of their songs."
+        "Our first visual channel is bubbles. Each song is represented by a bubble colored by its genre. Viewers can browse the songs by genre or artist, where larger bubble diameter indicates larger collection of songs. Viewers can also sort songs by Spotify metadata (i.e. song features), such as danceability and acousticness, in ascending order where songs with greater feature values are placed on the right to those with smaller values."
       );
     mthdText
       .append("p")
       .text(
-        "We process these samples using the python 'Librosa' library, and present the final output to you, the viewer."
+        "In addition, Spotify provides 30s samples for many songs, represented by bubbles with white outlines. Click the bubbles to access the detail."
       );
+    mthdText
+      .append("p")
+      .text(
+        "We process these samples using the python 'Librosa' library, and invented our second visual channel: the Gaussian-shaped curves. As the music plays, the detected notes are plotted as curves, whose height, growing horizontally, shows the note intensity. A certain note (e.g. D) spans up to 9 octaves, having 9 curves placed on top of each other. Each curve is uniquely colored by its octave."
+      );
+	
     mthdText
       .selectAll("p")
       .attr("class", "mthdText")
