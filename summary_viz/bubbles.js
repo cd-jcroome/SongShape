@@ -449,7 +449,7 @@ window.addEventListener("load", (event) => {
 
                 const yBaseline = this.height * 0.8;
 
-                const minCircleDistance = 0.0; // set this value to 0 to allow bubbles to contact one another
+                const minCircleDistance = 1.0; // set this value to zero to allow bubbles to contact one another
                                                // a non-zero value keeps bubbles away from one another
 
                 for(let i = 0; i < yCoordList.length; ++i)
@@ -460,33 +460,67 @@ window.addEventListener("load", (event) => {
                     // first element (i == 0) does not need to worry about overlap
                     if(i > 0)
                     {
-                        // iterate bubbles preceding the current bubble
-                        for(let bubbleIdx = 0; bubbleIdx < i; ++bubbleIdx)
+                        // if y coord has been adjusted, chances are the bubble may overlap other bubbles
+                        // hence do-while()
+                        let counterYAdjusted = 0;
+                        do
                         {
-                            let c1X = xScaleSortType(this.display_data[bubbleIdx]["value"]);
-                            let c1Y = yCoordList[bubbleIdx];
+                            // reinitialize
+                            counterYAdjusted = 0;
 
-                            yCoord = adjustCircleYCoordIfNecessary(
-                                c1X, c1Y, this.constantRadius, // circle 1 info
-                                xCoord, yCoord, this.constantRadius, // circle 2 info
-                                minCircleDistance);
-
-                            if(i == 3)
+                            // iterate bubbles preceding the current bubble
+                            for(let bubbleIdx = 0; bubbleIdx < i; ++bubbleIdx)
                             {
-                                console.log(`${c1X} ${c1Y} ${xCoord} ${yCoord} ${this.constantRadius}`);
+                                let c1X = xScaleSortType(this.display_data[bubbleIdx]["value"]);
+                                let c1Y = yCoordList[bubbleIdx];
+
+                                let yOld = yCoord;
+
+                                let result = adjustCircleYCoordIfNecessary(
+                                    c1X, c1Y, this.constantRadius, // circle 1 info
+                                    xCoord, yCoord, this.constantRadius, // circle 2 info
+                                    minCircleDistance,
+                                    i);
+
+                                yCoord = result["yCoord"];
+                                if(result["overlap"] === true)
+                                {
+                                    ++counterYAdjusted;
+                                }
                             }
                         }
+                        while(counterYAdjusted);
                     }
 
                     yCoordList[i] = yCoord;
                 }
 
-                this.circles
-                    .attr("cx", (d) => {
-                        return xScaleSortType(d["value"]);
-                    })
-                    .attr("cy", (d, i) => {
+                // this.circles
+                    // .attr("cx", (d) => {
+                        // return xScaleSortType(d["value"]);
+                    // })
+                    // .attr("cy", (d, i) => {
+                        // return yCoordList[i];
+                    // });
+
+                // each time control flows hits this point
+                // a new force simulation is created
+                // and the old one gets garbage collected
+                this.simulation = d3.forceSimulation()
+                    .force("y", d3.forceY((d, i) => {
                         return yCoordList[i];
+                    }).strength(0.1));
+
+                // call force simulation on each tick
+                this.simulation.nodes(this.display_data)
+                    .on('tick', () => {
+                        this.circles
+                        .attr("cx", (d) => {
+                            return xScaleSortType(d["value"]);
+                        })
+                        .attr("cy", (d, i) => {
+                            return d.y;
+                        });
                     });
             }
         };
@@ -554,7 +588,8 @@ window.addEventListener("load", (event) => {
     function adjustCircleYCoordIfNecessary(
         x1, y1, r1, // circle 1 info
         x2, y2, r2, // circle 2 info
-        minCircleDistance = 0)
+        minCircleDistance,
+        idx)
     {
         let tempX = x1 - x2;
         tempX = tempX * tempX;
@@ -567,11 +602,12 @@ window.addEventListener("load", (event) => {
         let minDistanceSqr = r1 + r2 + minCircleDistance;
         minDistanceSqr = minDistanceSqr * minDistanceSqr;
 
-        if(centerDistanceSqr >= minDistanceSqr)
+        if(centerDistanceSqr - minDistanceSqr > 0 ||
+          Math.abs(centerDistanceSqr - minDistanceSqr) < 1e-8)
         {
             // no adjustment is needed
             // return unchanged y2
-            return y2;
+            return {"yCoord" : y2, "overlap" : false};
         }
         else
         {
@@ -579,28 +615,22 @@ window.addEventListener("load", (event) => {
             // adjust circle 2's y coordinate to prevent overlap
             // always move circle 2 upward
 
+            let newY;
+
             // special case: x1 == x2
-            if(Math.abs(tempX) < 1e-6)
+            if(Math.abs(tempX) < 1e-8)
             {
-                let newY = y1 - r1 - r2 - minCircleDistance;
+                newY = y1 - r1 - r2 - minCircleDistance;
+            }
+            else
+            {
+                // general case where x1 != x2
+                newY = minDistanceSqr - tempX;
+                newY = y1 - Math.sqrt(newY);
             }
 
-            // general case where x1 != x2
-            let newY = minDistanceSqr - tempX;
-            newY = y1 - Math.sqrt(newY);
-
-            return newY;
+            return {"yCoord" : newY, "overlap" : true};
         }
-    }
-
-    //------------------------------------------------------------
-
-    //------------------------------------------------------------
-    function budgeCircleYCoord(x1, y1, r1,
-                               x2, y2, r2,
-                               minCircleDistance)
-    {
-
     }
 }); // end click event listener
 

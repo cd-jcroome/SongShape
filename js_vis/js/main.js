@@ -44,7 +44,6 @@ window.addEventListener("load", (event) => {
             prep.preprocess(csvRawData, ac.plotRefreshRate);
 
             musicPlot.initializePlot(csvRawData);
-            ac.musicLengthText.textContent = musicPlot.totalMusicTimeInSec.toFixed(1);
 
             mediaC.mediaEle.play();
 
