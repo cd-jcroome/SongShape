@@ -16,44 +16,31 @@
 </header>
 
 <body>
-<div class="flex-container">
-  <div id="controller-div">
-<!--     <audio id="my-media">
-      <source type="audio/mp3" />
-    </audio> -->
-    <br>
-    <br>
+	<div id="controller-div" class="flex-container-alt">
+		<!-- <audio id="my-media">
+			<source type="audio/mp3" />
+		</audio> -->
 
-    <button type="button" id="start" class="bubu-button">Start</button>
-    <table id="music-info">
-      <tr>
-        <td>
-          <p id="fps"></p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label>Time Elapsed [s]</label>
-        </td>
-        <td>
-          <p id="time-elapsed"></p>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <label>Music Length [s]</label>
-        </td>
-        <td>
-          <p id="music-length"></p>
-        </td>
-      </tr>
-    </table>
-  </div>
-  <div>
-    <div id="plot-div"></div>
-    <!-- <div id="legend-div"></div> -->
-  </div>
-</div>
+		<label id="song-label">Song Name:</label>
+		<p id="song-content"></p>
+
+		<label id="artist-label">Artist:</label>
+		<p id="artist-content"></p>
+	
+		<label id="time-elapsed-label">Time Elapsed [s]:</label>
+		<p id="time-elapsed"></p>
+ 
+		
+		<div id="buttonDiv">
+			<button type="button" id="start" class="bubu-button">Start</button>
+		</div>
+	</div>
+	<div class="flex-container">
+		<div id="plot-div"></div>
+		<div id="legend-div">
+			<br>
+		</div>
+	</div>
 </body>
 
 <footer>
@@ -61,6 +48,8 @@
       var preview_url = {{ preview_url|tojson }}
       console.log(preview_url)
     </script>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
     <script type="module" src="../static/js/detail.js"></script>
 </footer>
+
 {% endblock %}

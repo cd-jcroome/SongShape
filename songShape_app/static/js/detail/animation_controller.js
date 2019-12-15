@@ -8,7 +8,6 @@ export function AnimationController()
     this.timeElapsedInMillisec  = 0.0;
     this.timeIntervalInMillisec = 0.0;
     this.timeOld                = 0.0;
-    this.musicLengthText      = document.querySelector("#music-length");
 
     this.plotRefreshRate = 6;
     this.plotRefreshTimeInMillisec = 1.0 / this.plotRefreshRate * 1000.0;
