@@ -1,55 +1,61 @@
-{% extends "layout.html" %} {% block content %} var preview_url =
+{% extends "layout.html" %} {% block content %}
 
-<head>  
-    <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />    
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../static/css/bootstrap.min.css"
+    />
     <link rel="stylesheet" type="text/css" href="../static/css/detail.css" />
-    <link href="https://fonts.googleapis.com/css?family=Pacifico|Roboto&display=swap" rel="stylesheet">
-</head>
+    <link
+      href="https://fonts.googleapis.com/css?family=Pacifico|Roboto&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <header class="masthead mb-auto">
+    <div class="inner">
+      <h1 class="masthead-brand">AudioForma</h1>
+      <nav class="nav nav-masthead justify-content-center">
+        <a class="nav-link active" id="homelnk" href="/">Back To Home</a>
+      </nav>
+    </div>
+  </header>
+  <body>
+    <div id="controller-div" class="flex-container-alt">
+      <audio id="my-media">
+        <source type="audio/mp3" />
+      </audio>
 
-<header class="masthead mb-auto">
-  <div class="inner">
-    <h1 class="masthead-brand">AudioForma</h1>
-    <nav class="nav nav-masthead justify-content-center">
-      <a class="nav-link active" id="homelnk" href="#welcome">Back To Home</a>
-    </nav>
-  </div>
-</header>
+      <label id="song-label">Song Name:</label>
+      <p id="song-content"></p>
 
-<body>
-	<div id="controller-div" class="flex-container-alt">
-		<!-- <audio id="my-media">
-			<source type="audio/mp3" />
-		</audio> -->
+      <label id="artist-label">Artist:</label>
+      <p id="artist-content"></p>
 
-		<label id="song-label">Song Name:</label>
-		<p id="song-content"></p>
+      <label id="time-elapsed-label">Time Elapsed [s]:</label>
+      <p id="time-elapsed"></p>
 
-		<label id="artist-label">Artist:</label>
-		<p id="artist-content"></p>
-	
-		<label id="time-elapsed-label">Time Elapsed [s]:</label>
-		<p id="time-elapsed"></p>
- 
-		
-		<div id="buttonDiv">
-			<button type="button" id="start" class="bubu-button">Start</button>
-		</div>
-	</div>
-	<div class="flex-container">
-		<div id="plot-div"></div>
-		<div id="legend-div">
-			<br>
-		</div>
-	</div>
-</body>
+      <div id="buttonDiv">
+        <button type="button" id="start" class="bubu-button">Start</button>
+      </div>
+    </div>
+    <div class="flex-container">
+      <div id="plot-div"></div>
+      <div id="legend-div">
+        <br />
+      </div>
+    </div>
+  </body>
 
-<footer>
+  <footer>
     <script type="text/javascript">
       var preview_url = {{ preview_url|tojson }}
       console.log(preview_url)
     </script>
-	<script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
     <script type="module" src="../static/js/detail.js"></script>
-</footer>
+  </footer>
 
-{% endblock %}
+  {% endblock %}
+</html>
