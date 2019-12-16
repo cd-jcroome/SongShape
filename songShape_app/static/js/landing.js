@@ -89,7 +89,7 @@
       .text(
         "We start off by connecting with Spotify to query a user's library. After making a few API calls, we render the initial song metadata results using d3js."
       );
-	mthdText
+    mthdText
       .append("p")
       .text(
         "Our first visual channel is bubbles. Each song is represented by a bubble colored by its genre. Viewers can browse the songs by genre or artist, where larger bubble diameter indicates larger collection of songs. Viewers can also sort songs by Spotify metadata (i.e. song features), such as danceability and acousticness, in ascending order where songs with greater feature values are placed on the right to those with smaller values."
@@ -104,7 +104,7 @@
       .text(
         "We process these samples using the python 'Librosa' library, and invented our second visual channel: the Gaussian-shaped curves. As the music plays, the detected notes are plotted as curves, whose height, growing horizontally, shows the note intensity. A certain note (e.g. D) spans up to 9 octaves, having 9 curves placed on top of each other. Each curve is uniquely colored by its octave."
       );
-	
+
     mthdText
       .selectAll("p")
       .attr("class", "mthdText")
@@ -122,10 +122,10 @@
       .attr("height", `${stepHeight}`)
       .attr("width", `${stepWidth}`)
       // add browse-by selctor
-      .append("form")
-      .attr("class", "form-inline")
       .append("div")
       .attr("class", "form-group")
+      .style("width", "30vw")
+      .style("margin", "0")
       .append("label")
       .attr("for", "browseType")
       .text("Browse By")
@@ -134,14 +134,11 @@
       .attr("id", "browse-type")
       .style("transform", "translate(10px,0)");
 
-    d3.select("#bubblesGroup")
-      .append("form")
-      .attr("class", "form-inline")
-      .append("div")
-      .attr("class", "form-group")
+    d3.select(".form-group")
       .append("label")
       .attr("for", "sortType")
       .text("Sort By")
+      .style("transform", "translate(50px,0)")
       .append("select")
       .attr("class", "form-control")
       .attr("id", "sort-type")
@@ -167,28 +164,40 @@
     var sortSelector = d3.select("#sort-type");
     sortSelector
       .append("option")
-      .attr("value", "default")
+      .attr("value", "Popularity")
       .text("Popularity");
     sortSelector
       .append("option")
-      .attr("value", "acousticness")
-      .text("Acousticness");
-    sortSelector
-      .append("option")
-      .attr("value", "danceability")
+      .attr("value", "Danceability")
       .text("Danceability");
     sortSelector
       .append("option")
-      .attr("value", "liveness")
+      .attr("value", "Tempo")
+      .text("Tempo");
+    sortSelector
+      .append("option")
+      .attr("value", "Acousticness")
+      .text("Acousticness");
+    sortSelector
+      .append("option")
+      .attr("value", "Liveness")
       .text("Liveness");
     sortSelector
       .append("option")
-      .attr("value", "valence")
-      .text("Valence");
+      .attr("value", "Happiness")
+      .text("Happiness");
     sortSelector
       .append("option")
-      .attr("value", "energy")
+      .attr("value", "Energy")
       .text("Energy");
+    sortSelector
+      .append("option")
+      .attr("value", "Loudness")
+      .text("Loudness");
+    sortSelector
+      .append("option")
+      .attr("value", "Speechiness")
+      .text("Speechiness");
     // About---------------------------------------------------
     chartSpace
       .append("a")
@@ -211,24 +220,27 @@
 
     aboutText
       .append("p")
-      .text("3 individuals. 1 shared passion for data+design."
-        );
+      .text("3 individuals. 1 shared passion for data+design.");
     aboutText
       .append("p")
-      .text("Ning Chen is an information designer with a background in architecture and urban planning. Her unique visual style transforms data into art."
-        );
+      .text(
+        "Ning Chen is an information designer with a background in architecture and urban planning. Her unique visual style transforms data into art."
+      );
     aboutText
       .append("p")
-      .text("Jasper Croome is based in Portland, OR, where he works as a data visualization developer at Nike. Jasper's love of music and after-hours d3 dabbling set in motion the AudioForma project."
-        );    
+      .text(
+        "Jasper Croome is based in Portland, OR, where he works as a data visualization developer at Nike. Jasper's love of music and after-hours d3 dabbling set in motion the AudioForma project."
+      );
     aboutText
       .append("p")
-      .text("Rebecca Lantner is a quantitative analyst at a startup in Cambridge, MA. A self-professed data nerd, she delights in the layer of creativity that turns a SQL query into an impactful, data-driven experience."
-        );   
+      .text(
+        "Rebecca Lantner is a quantitative analyst at a startup in Cambridge, MA. A self-professed data nerd, she delights in the layer of creativity that turns a SQL query into an impactful, data-driven experience."
+      );
     aboutText
       .append("p")
-      .text("Special thanks to Zona Kostic for creative and strategic direction and Tianyu Liu for support with technical implementation."
-        );   
+      .text(
+        "Special thanks to Zona Kostic for creative and strategic direction and Tianyu Liu for support with technical implementation."
+      );
     aboutText
       .selectAll("p")
       .style("transform", `translate(0px,${stepHeight / 8}px)`)
