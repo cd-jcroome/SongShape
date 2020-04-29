@@ -44,9 +44,10 @@ function handleResize() {
     .style("pointer-events", "none");
 }
 d3.csv(
-  "https://raw.githubusercontent.com/Jasparr77/SongShape/master/output/SevenNationArmy.csv",
+  "https://raw.githubusercontent.com/Jasparr77/SongShape/master/output/SevenNationArmy.csv").then(
   function(data) {
-    console.log(data);
+    const d = data
+    console.log(d);
     handleResize();
 
     var x = d3
@@ -310,6 +311,6 @@ d3.csv(
       .attr("y", yRange - 5)
       .style("fill", "white")
       .text("Drums");
-  }
-);
+    }
+    );
 // https://math.stackexchange.com/questions/260096/find-the-coordinates-of-a-point-on-a-circle
