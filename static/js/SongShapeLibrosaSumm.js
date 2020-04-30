@@ -19,17 +19,6 @@ function handleResize() {
 
   chartGroup.style("width", xRange + "px").style("height", yRange + 40 + "px");
 
-//   div = d3
-//     .select("#staticBody")
-//     .append("div")
-//     .attr("class", "tooltip")
-//     .style("opacity", 0)
-//     .style("position", "absolute")
-//     .style("text-align", "center")
-//     .style("background", "whitesmoke")
-//     .style("padding", "8px")
-//     .style("border-radius", "8px")
-//     .style("pointer-events", "none");
 }
 const songList = ['Bonobo_Kerala','Flume_Helix','NaiPalm_WhenTheKnife','M83_Outro']
 const colors = ['purple','green','orange','blue']

@@ -71,8 +71,6 @@
     .domain(notes)
     .range([0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]);
 
-  console.log(noteDataScale("G#/Ab"));
-
   for (var i = 0; i < songs.length; i++) {
     const title = songs[i];
     d3.csv(
@@ -134,7 +132,10 @@
     var yRange = minDim;
     var xRange = minDim;
 
-    chartGroup.style("width", xRange + "px").style("height", yRange + "px");
+    chartGroup
+      .style("width", xRange + "px")
+      .style("height", yRange + "px")
+      .style("display","inline");
 
     x = d3
       .scaleLinear()
@@ -178,7 +179,7 @@
       .append("svg")
       .attr("id", title)
       .attr("height", minDim)
-      .attr("width", minDim);
+      .attr("width", minDim)
 
     // Note labels
     songContainer
